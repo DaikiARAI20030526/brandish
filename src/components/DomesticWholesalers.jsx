@@ -123,6 +123,7 @@ const DomesticWholesalers = () => {
               break;
             case 2: // CONVENIENCE STORE -> KM (カップ麺)
               // 指示: 右に100px、下に20px移動
+            
               imageStyleClass = "translate-x-[200px] translate-y-[40px]";
               break;
             case 3: // GAME CENTER -> PC (ポテチ)
