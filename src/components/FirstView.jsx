@@ -1,5 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 
+// 【重要】ファイル名の再確認をお願いします
+// ローカルでは表示されても、サーバー(Linux)では大文字小文字が違うと表示されません。
+// 実際のファイルが "yk_pc.png" なら、import文も合わせる必要があります。
 import logoImage from '../assets/YK_ロゴ仮.png';
 import logoheaderImage from '../assets/YK_ロゴ仮2.png';
 import liquidBottleImage from '../assets/YK_DS.png';
@@ -7,58 +10,56 @@ import cupNoodleImage from '../assets/YK_KM.png';
 import jarImage from '../assets/YK_BN.png';
 import chipsImage from '../assets/YK_PC.png';
 
+// ■ 高速化設定: コンポーネント外で静的にデータを定義
+// これによりレンダリングごとの計算ラグをゼロにします。
+const IMAGES = [
+  liquidBottleImage,
+  cupNoodleImage,
+  jarImage,
+  chipsImage
+];
+
+// レーン生成ロジック（定数化）
+const generateLaneData = (laneCount) => {
+  return Array.from({ length: laneCount }).map((_, laneIndex) => {
+    // 画像の並び順をレーンごとにずらす
+    const offset = laneIndex % IMAGES.length;
+    const rotatedImages = [...IMAGES.slice(offset), ...IMAGES.slice(0, offset)];
+    
+    // 縦に並べる回数（スマホでの切れ目防止のため十分に確保）
+    // 4画像 × 4セット = 16画像/レーン
+    let items = [];
+    for (let i = 0; i < 4; i++) {
+      items = [...items, ...rotatedImages];
+    }
+
+    return {
+      id: laneIndex,
+      // 無限スクロールのつなぎ目を滑らかにするために倍にする
+      items: [...items, ...items], 
+    };
+  });
+};
+
+// PC用・SP用のデータを事前に作成
+const DATA_SP = generateLaneData(2);
+const DATA_PC = generateLaneData(6);
+
 const FirstView = () => {
   const titleText = "あなたの\"うまい\"が、全国の食卓へ\n食の挑戦を、仕組みで支える";
   const subText = "Produce　by　YOKOYAMA";
   const [isSticky, setIsSticky] = useState(false);
-  
-  // 画像リスト
-  const productImages = useMemo(() => [
-    liquidBottleImage,
-    cupNoodleImage,
-    jarImage,
-    chipsImage
-  ], []);
-
-  // レーン生成関数
-  const generateLanes = (count, images) => {
-    return Array.from({ length: count }).map((_, laneIndex) => {
-      let items = [];
-      const offsetIndex = laneIndex % images.length;
-      
-      const baseImages = [
-          ...images.slice(offsetIndex),
-          ...images.slice(0, offsetIndex)
-      ];
-
-      for (let i = 0; i < 4; i++) { 
-        const itemsWithStyle = baseImages.map(img => ({
-          src: img,
-          offsetX: 0, 
-          gap: 60
-        }));
-        items = [...items, ...itemsWithStyle];
-      }
-
-      return {
-        id: laneIndex,
-        items: [...items, ...items],
-      };
-    });
-  };
-
-  // SP用レーン（2本）
-  const spLanes = useMemo(() => generateLanes(2, productImages), [productImages]);
-  // PC用レーン（6本）
-  const pcLanes = useMemo(() => generateLanes(6, productImages), [productImages]);
 
   // スクロール検知
   useEffect(() => {
     const handleScroll = () => {
-      const threshold = window.innerHeight * 0.9;
-      setIsSticky(window.scrollY >= threshold);
+      // 計算コストを下げるため、requestAnimationFrameを使用
+      requestAnimationFrame(() => {
+        const threshold = window.innerHeight * 0.9;
+        setIsSticky(window.scrollY >= threshold);
+      });
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -86,6 +87,12 @@ const FirstView = () => {
   return (
     <>
       <style>{`
+        /* GPU強制使用のための最適化 */
+        .hardware-accelerated {
+          transform: translateZ(0);
+          will-change: transform;
+        }
+
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
@@ -100,43 +107,45 @@ const FirstView = () => {
         }
         
         .animate-flow-unified {
-          animation: flowDown 62s linear infinite; 
+          animation: flowDown 62s linear infinite;
+          /* アニメーションのちらつき防止 */
+          backface-visibility: hidden;
+          perspective: 1000px;
         }
       `}</style>
 
-      {/* ■ FVエリア 
-          h-[90vh] -> h-[90dvh] に変更
-          dvh (Dynamic Viewport Height) を使うことで、スマホのアドレスバーが表示されていても
-          画面内に収まるように計算されます。
-      */}
+      {/* ■ FVエリア */}
       <section className="relative h-[90dvh] w-full bg-white overflow-hidden">
 
         {/* 背景アニメーションレイヤー */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
           
-          {/* === SP用レイアウト (md:hidden) === */}
+          {/* === SP用レイアウト (md:hidden) === 
+              読み込み即表示のため、遅延読み込み(lazy)を無効化し eager に設定
+          */}
           <div 
-            className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] flex md:hidden justify-center gap-0"
+            className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] flex md:hidden justify-center gap-0 hardware-accelerated"
             style={{ transform: `translate(-50%, -50%) rotate(25deg)` }}
           >
-            {spLanes.map((lane) => (
-              <div key={lane.id} className="flex-1 px-1 relative">
+            {DATA_SP.map((lane) => (
+              <div key={lane.id} className="flex-1 px-1 relative h-full">
                 <div 
-                  className="animate-flow-unified flex flex-col items-center w-full"
-                  style={{ animationDelay: `${lane.id * -10}s` }}
+                  className="animate-flow-unified flex flex-col items-center w-full hardware-accelerated"
+                  style={{ animationDelay: `${lane.id * -15}s` }} // ずらし時間を少し大きくしてバラつきを出す
                 >
-                  {lane.items.map((item, idx) => (
+                  {lane.items.map((src, idx) => (
                     <div 
                       key={idx} 
-                      className="w-full flex justify-center"
-                      style={{ paddingBottom: `${item.gap}px` }}
+                      className="w-full flex justify-center flex-shrink-0" // flex-shrink-0で画像潰れを防止
+                      style={{ paddingBottom: '60px' }}
                     >
                       <img 
-                        src={item.src} 
+                        src={src} 
                         alt="" 
-                        // SPサイズ: w-[160px] -> w-[280px] (1.75倍)
+                        // SPサイズ: w-[280px]
                         className="w-[280px] h-auto object-contain opacity-60 drop-shadow-lg" 
-                        loading="eager" 
+                        loading="eager" // 【重要】即時読み込み
+                        decoding="async" // メインスレッドをブロックせず描画
                       />
                     </div>
                   ))}
@@ -147,26 +156,27 @@ const FirstView = () => {
 
           {/* === PC用レイアウト (hidden md:flex) === */}
           <div 
-            className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] hidden md:flex justify-center gap-0"
+            className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] hidden md:flex justify-center gap-0 hardware-accelerated"
             style={{ transform: `translate(-50%, -50%) rotate(45deg)` }}
           >
-            {pcLanes.map((lane) => (
-              <div key={lane.id} className="flex-1 px-2 relative">
+            {DATA_PC.map((lane) => (
+              <div key={lane.id} className="flex-1 px-2 relative h-full">
                 <div 
-                  className="animate-flow-unified flex flex-col items-center w-full"
+                  className="animate-flow-unified flex flex-col items-center w-full hardware-accelerated"
                   style={{ animationDelay: `${lane.id * -10}s` }}
                 >
-                  {lane.items.map((item, idx) => (
+                  {lane.items.map((src, idx) => (
                     <div 
                       key={idx} 
-                      className="w-full flex justify-center"
-                      style={{ paddingBottom: `${item.gap}px` }}
+                      className="w-full flex justify-center flex-shrink-0"
+                      style={{ paddingBottom: '60px' }}
                     >
                       <img 
-                        src={item.src} 
+                        src={src} 
                         alt="" 
                         className="w-[420px] h-auto object-contain opacity-60 drop-shadow-lg" 
                         loading="eager"
+                        decoding="async"
                       />
                     </div>
                   ))}
@@ -180,30 +190,27 @@ const FirstView = () => {
         {/* コンテンツレイヤー */}
         <div className="relative z-10 w-full h-full flex flex-col items-center justify-start pt-10 px-4 pointer-events-none">
           
-          <h1 className="text-[22px] md:text-[22px] font-bold text-gray-900 text-center leading-[1.6] md:leading-[1.8] whitespace-pre-wrap pointer-events-auto">
+          <h1 className="text-[22px] md:text-[22px] font-bold text-gray-900 text-center leading-[1.6] md:leading-[1.8] whitespace-pre-wrap pointer-events-auto hardware-accelerated">
             <StaticText text={titleText} />
           </h1>
 
-          <div className="w-[300px] md:w-[350px] flex items-center justify-center pointer-events-auto my-4 md:my-0">
+          <div className="w-[300px] md:w-[350px] flex items-center justify-center pointer-events-auto my-4 md:my-0 hardware-accelerated">
             <img 
               src={logoImage} 
               alt="MY BRANDISH" 
-              className="w-full h-auto object-contain" 
+              className="w-full h-auto object-contain"
+              loading="eager" 
             />
           </div>
 
-          <p className="text-[18px] md:text-[16px] text-gray-600 text-center font-medium pointer-events-auto">
+          <p className="text-[18px] md:text-[16px] text-gray-600 text-center font-medium pointer-events-auto hardware-accelerated">
             <StaticText text={subText} />
           </p>
 
         </div>
       </section>
 
-      {/* ■ Headerエリア 
-          h-[10vh] -> h-[10dvh] に変更
-          これで FV(90dvh) + Header(10dvh) = 100dvh となり、
-          ブラウザを開いた瞬間にヘッダーまで綺麗に収まります。
-      */}
+      {/* ■ Headerエリア */}
       <header className="sticky top-0 z-50 h-[10dvh] min-h-[60px] w-full flex items-center pl-2 pr-4 md:px-8 transition-all duration-300 bg-white/60 backdrop-blur-sm md:bg-transparent md:backdrop-blur-none">
         
         <div className="absolute left-2 md:left-1/2 transform md:-translate-x-1/2 flex justify-start md:justify-center w-auto md:w-full pointer-events-none">
