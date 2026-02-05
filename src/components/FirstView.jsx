@@ -20,10 +20,6 @@ const FirstView = () => {
     chipsImage
   ], []);
 
-  // ■ 高速化対応: 
-  // 画面サイズ判定(useEffect)を待たずに、PC用とSP用のレーンデータを事前に作成しておく。
-  // これにより表示のラグを極限まで減らします。
-
   // レーン生成関数
   const generateLanes = (count, images) => {
     return Array.from({ length: count }).map((_, laneIndex) => {
@@ -104,24 +100,21 @@ const FirstView = () => {
         }
         
         .animate-flow-unified {
-          /* 60s -> 62s (2秒遅く) */
           animation: flowDown 62s linear infinite; 
         }
       `}</style>
 
-      {/* ■ FVエリア */}
-      <section className="relative h-[90vh] w-full bg-white overflow-hidden">
+      {/* ■ FVエリア 
+          h-[90vh] -> h-[90dvh] に変更
+          dvh (Dynamic Viewport Height) を使うことで、スマホのアドレスバーが表示されていても
+          画面内に収まるように計算されます。
+      */}
+      <section className="relative h-[90dvh] w-full bg-white overflow-hidden">
 
         {/* 背景アニメーションレイヤー */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           
-          {/* 【高速化のポイント】
-            SP用とPC用をCSSの display (md:hidden / md:flex) で出し分けます。
-            JSの計算待ちが発生しないため、読み込み直後から表示されます。
-          */}
-
           {/* === SP用レイアウト (md:hidden) === */}
-          {/* 回転: 25度, 画像幅: 160px (見切れ対策) */}
           <div 
             className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] flex md:hidden justify-center gap-0"
             style={{ transform: `translate(-50%, -50%) rotate(25deg)` }}
@@ -141,9 +134,9 @@ const FirstView = () => {
                       <img 
                         src={item.src} 
                         alt="" 
-                        // SPサイズ: w-[160px] (見切れ防止のため縮小)
-                        className="w-[160px] h-auto object-contain opacity-60 drop-shadow-lg" 
-                        loading="eager" // 画像を優先読み込み
+                        // SPサイズ: w-[160px] -> w-[280px] (1.75倍)
+                        className="w-[280px] h-auto object-contain opacity-60 drop-shadow-lg" 
+                        loading="eager" 
                       />
                     </div>
                   ))}
@@ -153,7 +146,6 @@ const FirstView = () => {
           </div>
 
           {/* === PC用レイアウト (hidden md:flex) === */}
-          {/* 回転: 45度, 画像幅: 420px */}
           <div 
             className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] hidden md:flex justify-center gap-0"
             style={{ transform: `translate(-50%, -50%) rotate(45deg)` }}
@@ -188,10 +180,6 @@ const FirstView = () => {
         {/* コンテンツレイヤー */}
         <div className="relative z-10 w-full h-full flex flex-col items-center justify-start pt-10 px-4 pointer-events-none">
           
-          {/* タイトル: 
-              前回SP: text-[28px] -> 今回: text-[22px] (約1.25倍縮小)
-              PC: text-[22px] (維持)
-          */}
           <h1 className="text-[22px] md:text-[22px] font-bold text-gray-900 text-center leading-[1.6] md:leading-[1.8] whitespace-pre-wrap pointer-events-auto">
             <StaticText text={titleText} />
           </h1>
@@ -204,10 +192,6 @@ const FirstView = () => {
             />
           </div>
 
-          {/* サブテキスト: 
-              前回SP: text-[22px] -> 今回: text-[18px] (約1.25倍縮小)
-              PC: text-[16px] (維持)
-          */}
           <p className="text-[18px] md:text-[16px] text-gray-600 text-center font-medium pointer-events-auto">
             <StaticText text={subText} />
           </p>
@@ -215,8 +199,12 @@ const FirstView = () => {
         </div>
       </section>
 
-      {/* ■ Headerエリア */}
-      <header className="sticky top-0 z-50 h-[10vh] min-h-[60px] w-full flex items-center pl-2 pr-4 md:px-8 transition-all duration-300 bg-white/60 backdrop-blur-sm md:bg-transparent md:backdrop-blur-none">
+      {/* ■ Headerエリア 
+          h-[10vh] -> h-[10dvh] に変更
+          これで FV(90dvh) + Header(10dvh) = 100dvh となり、
+          ブラウザを開いた瞬間にヘッダーまで綺麗に収まります。
+      */}
+      <header className="sticky top-0 z-50 h-[10dvh] min-h-[60px] w-full flex items-center pl-2 pr-4 md:px-8 transition-all duration-300 bg-white/60 backdrop-blur-sm md:bg-transparent md:backdrop-blur-none">
         
         <div className="absolute left-2 md:left-1/2 transform md:-translate-x-1/2 flex justify-start md:justify-center w-auto md:w-full pointer-events-none">
           {isSticky && (
