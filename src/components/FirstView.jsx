@@ -12,9 +12,6 @@ const FirstView = () => {
   const subText = "Produce　by　YOKOYAMA";
   const [isSticky, setIsSticky] = useState(false);
   
-  // 角度管理 (SP: 25度, PC: 45度)
-  const [rotationAngle, setRotationAngle] = useState(25);
-
   // 画像リスト
   const productImages = useMemo(() => [
     liquidBottleImage,
@@ -23,55 +20,41 @@ const FirstView = () => {
     chipsImage
   ], []);
 
-  // レーン管理
-  const [lanes, setLanes] = useState([]);
+  // ■ 高速化対応: 
+  // 画面サイズ判定(useEffect)を待たずに、PC用とSP用のレーンデータを事前に作成しておく。
+  // これにより表示のラグを極限まで減らします。
 
-  useEffect(() => {
-    const updateLayout = () => {
-      const isMobile = window.innerWidth < 768;
+  // レーン生成関数
+  const generateLanes = (count, images) => {
+    return Array.from({ length: count }).map((_, laneIndex) => {
+      let items = [];
+      const offsetIndex = laneIndex % images.length;
       
-      setRotationAngle(isMobile ? 25 : 45);
+      const baseImages = [
+          ...images.slice(offsetIndex),
+          ...images.slice(0, offsetIndex)
+      ];
 
-      const laneCount = isMobile ? 2 : 6; 
-      
-      const newLanes = Array.from({ length: laneCount }).map((_, laneIndex) => {
-        let items = [];
-        // ランダム性を排除し、固定の並び順で生成
-        // レーンごとに少し開始位置（画像インデックス）をずらすことで、
-        // 全く同じ並びが横に並ばないように調整（見た目のバランス確保のため）
-        const offsetIndex = laneIndex % productImages.length;
-        
-        // ループ用のベース配列を作成
-        // 4つの画像を順番に並べる構成を基本とする
-        const baseImages = [
-            ...productImages.slice(offsetIndex),
-            ...productImages.slice(0, offsetIndex)
-        ];
+      for (let i = 0; i < 4; i++) { 
+        const itemsWithStyle = baseImages.map(img => ({
+          src: img,
+          offsetX: 0, 
+          gap: 60
+        }));
+        items = [...items, ...itemsWithStyle];
+      }
 
-        // 縦に十分な高さを確保するために繰り返す
-        for (let i = 0; i < 4; i++) { 
-          const itemsWithStyle = baseImages.map(img => ({
-            src: img,
-            offsetX: 0, // ランダムな横ズレを削除（中央揃え）
-            gap: 60     // ランダムな間隔を削除（固定値）
-          }));
-          items = [...items, ...itemsWithStyle];
-        }
+      return {
+        id: laneIndex,
+        items: [...items, ...items],
+      };
+    });
+  };
 
-        return {
-          id: laneIndex,
-          // 無限スクロール用に配列を複製
-          items: [...items, ...items],
-        };
-      });
-      setLanes(newLanes);
-    };
-
-    updateLayout();
-    window.addEventListener('resize', updateLayout);
-    return () => window.removeEventListener('resize', updateLayout);
-
-  }, [productImages]);
+  // SP用レーン（2本）
+  const spLanes = useMemo(() => generateLanes(2, productImages), [productImages]);
+  // PC用レーン（6本）
+  const pcLanes = useMemo(() => generateLanes(6, productImages), [productImages]);
 
   // スクロール検知
   useEffect(() => {
@@ -121,8 +104,8 @@ const FirstView = () => {
         }
         
         .animate-flow-unified {
-          /* 113s から 60s に変更 */
-          animation: flowDown 60s linear infinite; 
+          /* 60s -> 62s (2秒遅く) */
+          animation: flowDown 62s linear infinite; 
         }
       `}</style>
 
@@ -131,36 +114,36 @@ const FirstView = () => {
 
         {/* 背景アニメーションレイヤー */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          
+          {/* 【高速化のポイント】
+            SP用とPC用をCSSの display (md:hidden / md:flex) で出し分けます。
+            JSの計算待ちが発生しないため、読み込み直後から表示されます。
+          */}
+
+          {/* === SP用レイアウト (md:hidden) === */}
+          {/* 回転: 25度, 画像幅: 160px (見切れ対策) */}
           <div 
-            className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] flex justify-center gap-0 transition-transform duration-500 ease-in-out"
-            style={{
-              transform: `translate(-50%, -50%) rotate(${rotationAngle}deg)`, 
-            }}
+            className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] flex md:hidden justify-center gap-0"
+            style={{ transform: `translate(-50%, -50%) rotate(25deg)` }}
           >
-            {lanes.map((lane) => (
-              <div key={lane.id} className="flex-1 px-2 relative">
+            {spLanes.map((lane) => (
+              <div key={lane.id} className="flex-1 px-1 relative">
                 <div 
                   className="animate-flow-unified flex flex-col items-center w-full"
-                  style={{
-                    // レーンごとの開始タイミングのズレも固定化（あるいは削除）する場合はここを調整
-                    // 今回は「特定の配置」として、レーンごとの進行ズレは残しつつ画像順序を固定しました
-                    animationDelay: `${lane.id * -10}s` 
-                  }}
+                  style={{ animationDelay: `${lane.id * -10}s` }}
                 >
                   {lane.items.map((item, idx) => (
                     <div 
                       key={idx} 
                       className="w-full flex justify-center"
-                      style={{
-                        paddingBottom: `${item.gap}px`,
-                        transform: `translateX(${item.offsetX}%)`
-                      }}
+                      style={{ paddingBottom: `${item.gap}px` }}
                     >
                       <img 
                         src={item.src} 
                         alt="" 
-                        // opacity-100 -> opacity-60 に変更（透過処理）
-                        className="w-[300px] md:w-[420px] h-auto object-contain opacity-60 drop-shadow-lg" 
+                        // SPサイズ: w-[160px] (見切れ防止のため縮小)
+                        className="w-[160px] h-auto object-contain opacity-60 drop-shadow-lg" 
+                        loading="eager" // 画像を優先読み込み
                       />
                     </div>
                   ))}
@@ -168,21 +151,51 @@ const FirstView = () => {
               </div>
             ))}
           </div>
+
+          {/* === PC用レイアウト (hidden md:flex) === */}
+          {/* 回転: 45度, 画像幅: 420px */}
+          <div 
+            className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] hidden md:flex justify-center gap-0"
+            style={{ transform: `translate(-50%, -50%) rotate(45deg)` }}
+          >
+            {pcLanes.map((lane) => (
+              <div key={lane.id} className="flex-1 px-2 relative">
+                <div 
+                  className="animate-flow-unified flex flex-col items-center w-full"
+                  style={{ animationDelay: `${lane.id * -10}s` }}
+                >
+                  {lane.items.map((item, idx) => (
+                    <div 
+                      key={idx} 
+                      className="w-full flex justify-center"
+                      style={{ paddingBottom: `${item.gap}px` }}
+                    >
+                      <img 
+                        src={item.src} 
+                        alt="" 
+                        className="w-[420px] h-auto object-contain opacity-60 drop-shadow-lg" 
+                        loading="eager"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
         </div>
 
         {/* コンテンツレイヤー */}
         <div className="relative z-10 w-full h-full flex flex-col items-center justify-start pt-10 px-4 pointer-events-none">
           
-          {/* タイトル: text-[18px] -> text-[28px] (約1.5倍)
-            mdサイズは元のまま維持
+          {/* タイトル: 
+              前回SP: text-[28px] -> 今回: text-[22px] (約1.25倍縮小)
+              PC: text-[22px] (維持)
           */}
-          <h1 className="text-[28px] md:text-[22px] font-bold text-gray-900 text-center leading-[1.6] md:leading-[1.8] whitespace-pre-wrap pointer-events-auto">
+          <h1 className="text-[22px] md:text-[22px] font-bold text-gray-900 text-center leading-[1.6] md:leading-[1.8] whitespace-pre-wrap pointer-events-auto">
             <StaticText text={titleText} />
           </h1>
 
-          {/* ロゴコンテナ: w-[200px] -> w-[300px] (1.5倍)
-            mdサイズは元のまま維持
-          */}
           <div className="w-[300px] md:w-[350px] flex items-center justify-center pointer-events-auto my-4 md:my-0">
             <img 
               src={logoImage} 
@@ -191,10 +204,11 @@ const FirstView = () => {
             />
           </div>
 
-          {/* サブテキスト: text-[14px] -> text-[22px] (約1.5倍)
-            mdサイズは元のまま維持
+          {/* サブテキスト: 
+              前回SP: text-[22px] -> 今回: text-[18px] (約1.25倍縮小)
+              PC: text-[16px] (維持)
           */}
-          <p className="text-[22px] md:text-[16px] text-gray-600 text-center font-medium pointer-events-auto">
+          <p className="text-[18px] md:text-[16px] text-gray-600 text-center font-medium pointer-events-auto">
             <StaticText text={subText} />
           </p>
 
