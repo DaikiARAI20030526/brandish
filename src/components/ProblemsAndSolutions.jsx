@@ -44,8 +44,11 @@ const ProblemsAndSolutions = () => {
           const rect = el.getBoundingClientRect();
           const windowHeight = window.innerHeight;
           
+          // ■ 修正点(SP): 変化に必要な距離を短くして、約1.3倍速く切り替わるように調整
+          // start(0.5) - end(0.2) = 0.3 の距離だったものを
+          // start(0.5) - end(0.27) = 0.23 の距離に短縮 (0.3 / 1.3 ≒ 0.23)
           const start = windowHeight * 0.50;
-          const end = windowHeight * 0.20; 
+          const end = windowHeight * 0.27; 
           
           let p = (start - rect.top) / (start - end);
           return Math.min(Math.max(p, 0), 1);
@@ -102,7 +105,8 @@ const ProblemsAndSolutions = () => {
     <section 
       ref={sectionRef} 
       className="relative" 
-      style={{ height: isMobile ? 'auto' : '600vh' }}
+      // ■ 修正点(PC): 全体の高さを600vhから460vhに短縮 (約1.3倍速く完了させるため)
+      style={{ height: isMobile ? 'auto' : '460vh' }}
     >
       
       <div className={`
@@ -115,7 +119,6 @@ const ProblemsAndSolutions = () => {
           w-full transition-all duration-500 z-10 
           ${isMobile 
             ? 'text-center mb-8' 
-            // ■ 修正点: ml-32 を削除し、pl-32 (padding-left: 8rem) を適用
             : 'text-left pl-32 mt-[12vh]' 
           }
         `}>
@@ -132,7 +135,7 @@ const ProblemsAndSolutions = () => {
           </h2>
         </div>
 
-        {/* ■ リストエリア */}
+        {/* リストエリア */}
         <div className={`
           w-full flex flex-col justify-center 
           ${isMobile ? '' : 'mt-8'}
@@ -156,7 +159,7 @@ const ProblemsAndSolutions = () => {
                 }}
               >
 
-                {/* ■ 1. 左側：数字エリア */}
+                {/* 1. 左側：数字エリア */}
                 <div className={`
                   flex-none flex items-center relative
                   ${isMobile 
@@ -185,7 +188,7 @@ const ProblemsAndSolutions = () => {
                   </span>
                 </div>
 
-                {/* ■ 2. 右側：コンテンツエリア */}
+                {/* 2. 右側：コンテンツエリア */}
                 <div className="flex-1 relative h-full overflow-hidden">
                   
                   <div className={`
