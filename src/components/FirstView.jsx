@@ -36,19 +36,31 @@ const FirstView = () => {
       
       const newLanes = Array.from({ length: laneCount }).map((_, laneIndex) => {
         let items = [];
+        // ランダム性を排除し、固定の並び順で生成
+        // レーンごとに少し開始位置（画像インデックス）をずらすことで、
+        // 全く同じ並びが横に並ばないように調整（見た目のバランス確保のため）
+        const offsetIndex = laneIndex % productImages.length;
+        
+        // ループ用のベース配列を作成
+        // 4つの画像を順番に並べる構成を基本とする
+        const baseImages = [
+            ...productImages.slice(offsetIndex),
+            ...productImages.slice(0, offsetIndex)
+        ];
+
+        // 縦に十分な高さを確保するために繰り返す
         for (let i = 0; i < 4; i++) { 
-          const shuffledImages = [...productImages].sort(() => 0.5 - Math.random());
-          
-          const itemsWithStyle = shuffledImages.map(img => ({
+          const itemsWithStyle = baseImages.map(img => ({
             src: img,
-            offsetX: Math.floor(Math.random() * 40) - 20, 
-            gap: Math.floor(Math.random() * 60) + 40 
+            offsetX: 0, // ランダムな横ズレを削除（中央揃え）
+            gap: 60     // ランダムな間隔を削除（固定値）
           }));
           items = [...items, ...itemsWithStyle];
         }
 
         return {
           id: laneIndex,
+          // 無限スクロール用に配列を複製
           items: [...items, ...items],
         };
       });
@@ -109,7 +121,8 @@ const FirstView = () => {
         }
         
         .animate-flow-unified {
-          animation: flowDown 113s linear infinite; 
+          /* 113s から 60s に変更 */
+          animation: flowDown 60s linear infinite; 
         }
       `}</style>
 
@@ -129,7 +142,9 @@ const FirstView = () => {
                 <div 
                   className="animate-flow-unified flex flex-col items-center w-full"
                   style={{
-                    animationDelay: `${lane.id * -15}s`
+                    // レーンごとの開始タイミングのズレも固定化（あるいは削除）する場合はここを調整
+                    // 今回は「特定の配置」として、レーンごとの進行ズレは残しつつ画像順序を固定しました
+                    animationDelay: `${lane.id * -10}s` 
                   }}
                 >
                   {lane.items.map((item, idx) => (
@@ -144,7 +159,8 @@ const FirstView = () => {
                       <img 
                         src={item.src} 
                         alt="" 
-                        className="w-[300px] md:w-[420px] h-auto object-contain opacity-100 drop-shadow-lg" 
+                        // opacity-100 -> opacity-60 に変更（透過処理）
+                        className="w-[300px] md:w-[420px] h-auto object-contain opacity-60 drop-shadow-lg" 
                       />
                     </div>
                   ))}
@@ -155,13 +171,19 @@ const FirstView = () => {
         </div>
 
         {/* コンテンツレイヤー */}
-        <div className="relative z-10 w-full h-full flex flex-col items-center justify-start pt-4 px-4 pointer-events-none">
+        <div className="relative z-10 w-full h-full flex flex-col items-center justify-start pt-10 px-4 pointer-events-none">
           
-          <h1 className="text-[18px] md:text-[22px] font-bold text-gray-900 text-center leading-[1.8] whitespace-pre-wrap pointer-events-auto">
+          {/* タイトル: text-[18px] -> text-[28px] (約1.5倍)
+            mdサイズは元のまま維持
+          */}
+          <h1 className="text-[28px] md:text-[22px] font-bold text-gray-900 text-center leading-[1.6] md:leading-[1.8] whitespace-pre-wrap pointer-events-auto">
             <StaticText text={titleText} />
           </h1>
 
-          <div className="w-[200px] md:w-[350px] flex items-center justify-center pointer-events-auto">
+          {/* ロゴコンテナ: w-[200px] -> w-[300px] (1.5倍)
+            mdサイズは元のまま維持
+          */}
+          <div className="w-[300px] md:w-[350px] flex items-center justify-center pointer-events-auto my-4 md:my-0">
             <img 
               src={logoImage} 
               alt="MY BRANDISH" 
@@ -169,7 +191,10 @@ const FirstView = () => {
             />
           </div>
 
-          <p className="text-[14px] md:text-[16px] text-gray-600 text-center font-medium pointer-events-auto">
+          {/* サブテキスト: text-[14px] -> text-[22px] (約1.5倍)
+            mdサイズは元のまま維持
+          */}
+          <p className="text-[22px] md:text-[16px] text-gray-600 text-center font-medium pointer-events-auto">
             <StaticText text={subText} />
           </p>
 
@@ -177,15 +202,8 @@ const FirstView = () => {
       </section>
 
       {/* ■ Headerエリア */}
-      {/* 修正点:
-         - backdrop-blur-sm: ボカシを薄めに
-         - pl-2: 左paddingを0.5remに
-      */}
       <header className="sticky top-0 z-50 h-[10vh] min-h-[60px] w-full flex items-center pl-2 pr-4 md:px-8 transition-all duration-300 bg-white/60 backdrop-blur-sm md:bg-transparent md:backdrop-blur-none">
         
-        {/* 修正点:
-           - left-2: 左位置を0.5remに
-        */}
         <div className="absolute left-2 md:left-1/2 transform md:-translate-x-1/2 flex justify-start md:justify-center w-auto md:w-full pointer-events-none">
           {isSticky && (
             <img 
