@@ -36,7 +36,6 @@ const ProblemsAndSolutions = () => {
   useEffect(() => {
     const handleScroll = () => {
       // --- SP (530px以下) のロジック ---
-      // 前回の設定(start:0.5, end:0.27)を維持
       if (isMobile) {
         const newProgresses = items.map((_, i) => {
           const el = itemRefs.current[i];
@@ -103,8 +102,8 @@ const ProblemsAndSolutions = () => {
     <section 
       ref={sectionRef} 
       className="relative" 
-    
-      style={{ height: isMobile ? 'auto' : '230vh' }}
+      // ■ 修正点1: PC版の高さを240vhに変更
+      style={{ height: isMobile ? 'auto' : '240vh' }}
     >
       
       <div className={`
@@ -122,11 +121,13 @@ const ProblemsAndSolutions = () => {
         `}>
           <h2 className={`font-semibold transition-all duration-700 ${isMobile ? 'text-[18px]' : 'text-[24px] h-[40px]'}`}>
             {isSolutionPhase ? (
-               <span className="text-gray-900 animate-fade-in block">
+               // ■ 修正点2: 背景色(#FFD014)、文字色(#FFF)、余白、角丸を追加
+               <span className="inline-block bg-[#FFD014] text-white rounded-full py-[5px] px-[8px] animate-fade-in">
                  YOKOYAMAにお任せください
                </span>
             ) : (
-               <span className="text-gray-800 block">
+               // ■ 修正点2: 同上
+               <span className="inline-block bg-[#FFD014] text-white rounded-full py-[5px] px-[8px]">
                  こんなお悩みありませんか？
                </span>
             )}
