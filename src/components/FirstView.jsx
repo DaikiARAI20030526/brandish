@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
 // 【重要】ファイル名の再確認をお願いします
-// ローカルでは表示されても、サーバー(Linux)では大文字小文字が違うと表示されません。
-// 実際のファイルが "yk_pc.png" なら、import文も合わせる必要があります。
 import logoImage from '../assets/YK_ロゴ仮.png';
 import logoheaderImage from '../assets/YK_ロゴ仮2.png';
 import liquidBottleImage from '../assets/YK_DS.png';
@@ -11,7 +9,6 @@ import jarImage from '../assets/YK_BN.png';
 import chipsImage from '../assets/YK_PC.png';
 
 // ■ 高速化設定: コンポーネント外で静的にデータを定義
-// これによりレンダリングごとの計算ラグをゼロにします。
 const IMAGES = [
   liquidBottleImage,
   cupNoodleImage,
@@ -19,15 +16,12 @@ const IMAGES = [
   chipsImage
 ];
 
-// レーン生成ロジック（定数化）
+// レーン生成ロジック
 const generateLaneData = (laneCount) => {
   return Array.from({ length: laneCount }).map((_, laneIndex) => {
-    // 画像の並び順をレーンごとにずらす
     const offset = laneIndex % IMAGES.length;
     const rotatedImages = [...IMAGES.slice(offset), ...IMAGES.slice(0, offset)];
     
-    // 縦に並べる回数（スマホでの切れ目防止のため十分に確保）
-    // 4画像 × 4セット = 16画像/レーン
     let items = [];
     for (let i = 0; i < 4; i++) {
       items = [...items, ...rotatedImages];
@@ -35,13 +29,11 @@ const generateLaneData = (laneCount) => {
 
     return {
       id: laneIndex,
-      // 無限スクロールのつなぎ目を滑らかにするために倍にする
       items: [...items, ...items], 
     };
   });
 };
 
-// PC用・SP用のデータを事前に作成
 const DATA_SP = generateLaneData(2);
 const DATA_PC = generateLaneData(6);
 
@@ -53,7 +45,6 @@ const FirstView = () => {
   // スクロール検知
   useEffect(() => {
     const handleScroll = () => {
-      // 計算コストを下げるため、requestAnimationFrameを使用
       requestAnimationFrame(() => {
         const threshold = window.innerHeight * 0.9;
         setIsSticky(window.scrollY >= threshold);
@@ -108,7 +99,6 @@ const FirstView = () => {
         
         .animate-flow-unified {
           animation: flowDown 62s linear infinite;
-          /* アニメーションのちらつき防止 */
           backface-visibility: hidden;
           perspective: 1000px;
         }
@@ -120,9 +110,7 @@ const FirstView = () => {
         {/* 背景アニメーションレイヤー */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
           
-          {/* === SP用レイアウト (md:hidden) === 
-              読み込み即表示のため、遅延読み込み(lazy)を無効化し eager に設定
-          */}
+          {/* === SP用レイアウト === */}
           <div 
             className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] flex md:hidden justify-center gap-0 hardware-accelerated"
             style={{ transform: `translate(-50%, -50%) rotate(25deg)` }}
@@ -131,21 +119,20 @@ const FirstView = () => {
               <div key={lane.id} className="flex-1 px-1 relative h-full">
                 <div 
                   className="animate-flow-unified flex flex-col items-center w-full hardware-accelerated"
-                  style={{ animationDelay: `${lane.id * -15}s` }} // ずらし時間を少し大きくしてバラつきを出す
+                  style={{ animationDelay: `${lane.id * -15}s` }}
                 >
                   {lane.items.map((src, idx) => (
                     <div 
                       key={idx} 
-                      className="w-full flex justify-center flex-shrink-0" // flex-shrink-0で画像潰れを防止
+                      className="w-full flex justify-center flex-shrink-0"
                       style={{ paddingBottom: '60px' }}
                     >
                       <img 
                         src={src} 
                         alt="" 
-                        // SPサイズ: w-[280px]
                         className="w-[280px] h-auto object-contain opacity-60 drop-shadow-lg" 
-                        loading="eager" // 【重要】即時読み込み
-                        decoding="async" // メインスレッドをブロックせず描画
+                        loading="eager"
+                        decoding="async"
                       />
                     </div>
                   ))}
@@ -154,7 +141,7 @@ const FirstView = () => {
             ))}
           </div>
 
-          {/* === PC用レイアウト (hidden md:flex) === */}
+          {/* === PC用レイアウト === */}
           <div 
             className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] hidden md:flex justify-center gap-0 hardware-accelerated"
             style={{ transform: `translate(-50%, -50%) rotate(45deg)` }}
@@ -223,15 +210,26 @@ const FirstView = () => {
           )}
         </div>
 
-        <div className="ml-auto flex items-center gap-6 text-[11px] font-bold text-gray-800 z-10 cursor-pointer">
+        {/* ■ 修正箇所: ナビゲーションメニュー
+           - text-[11px] (SP) / md:text-[22px] (PC: 2倍に拡大)
+           - gap-6 (SP) / md:gap-10 (PC: 間隔を少し広げる)
+        */}
+        <div className="ml-auto flex items-center gap-6 md:gap-10 text-[11px] md:text-[22px] font-bold text-gray-800 z-10 cursor-pointer">
           <button onClick={() => scrollToSection('mybrandish')} className="hover:text-amber-500 transition-colors">
             MyBrandishとは？
           </button>
           <button onClick={() => scrollToSection('service')} className="hover:text-amber-500 transition-colors">
             サービス内容について
           </button>
-          <button onClick={() => scrollToSection('contact')} className="hover:text-amber-500 transition-colors">
-            お問合せ
+          
+          {/* ■ 修正箇所: お問合せボタンの装飾
+             - 黄色背景(#FFD014), 丸角, パディング追加
+             - テキストは黒
+          */}
+          <button onClick={() => scrollToSection('contact')}>
+            <span className="inline-block bg-[#FFD014] text-black rounded-full py-2 px-6 transition hover:bg-[#e6bb12]">
+              お問合せ
+            </span>
           </button>
         </div>
       </header>
