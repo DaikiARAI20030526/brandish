@@ -21,7 +21,7 @@ body::after {
   left: 0;
   right: 0;
   bottom: 0;
-  border: 1px solid #FFD014; /* 枠線の色と太さ */
+  border: 10px solid #FFD014; /* 枠線の色と太さ */
   z-index: 9999; /* 最前面に表示（ヘッダー画像などに隠れないように） */
   pointer-events: none; /* 重要：枠線がクリックを邪魔しないようにする */
 }
