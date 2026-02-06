@@ -17,7 +17,6 @@ const CompanyInfo = () => {
     { label: '資本金', value: '30,000,000円' },
     { 
       label: '主要取引先', 
-      // ■ 修正: whitespace-nowrapを追加し、単語途中での改行を完全に禁止
       value: (
         <>
           <span className="inline-block whitespace-nowrap">三菱食品株式会社/</span>
@@ -29,11 +28,10 @@ const CompanyInfo = () => {
     },
     { 
       label: '取引先銀行', 
-      // ■ 修正: 取引先銀行も同様に span + whitespace-nowrap で分割
       value: (
         <>
-          <span className="inline-block whitespace-nowrap">みずほ銀行/</span>
-          <span className="inline-block whitespace-nowrap">西武信用金庫/</span>
+          <span className="inline-block whitespace-nowrap">みずほ銀行、</span>
+          <span className="inline-block whitespace-nowrap">西武信用金庫、</span>
           <span className="inline-block whitespace-nowrap">GMOあおぞらネット銀行</span>
         </>
       ) 
@@ -55,11 +53,15 @@ const CompanyInfo = () => {
           {companyData.map((item, idx) => (
             <div key={idx} className="flex border-b border-[#FFD014] pb-4 justify-between items-center">
               
-              <div className="w-40 font-medium flex-shrink-0 text-[17px] leading-[32px]">
+              {/* ■ 修正: レスポンシブ対応
+                  SP: text-sm leading-[27px] (元のサイズ)
+                  PC: md:text-[17px] md:leading-[32px] (拡大サイズ)
+              */}
+              <div className="w-40 font-medium flex-shrink-0 text-sm leading-[27px] md:text-[17px] md:leading-[32px]">
                 {item.label}
               </div>
               
-              <div className="flex-1 text-right text-[17px] leading-[32px]">
+              <div className="flex-1 text-right text-sm leading-[27px] md:text-[17px] md:leading-[32px]">
                 {item.value}
               </div>
             </div>
