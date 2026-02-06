@@ -122,7 +122,7 @@ const ProblemsAndSolutions = () => {
           <h2 className={`font-semibold transition-all duration-700 ${isMobile ? 'text-[18px]' : 'text-[24px] h-[40px]'}`}>
             {isSolutionPhase ? (
                // ■ 修正点2: 背景色(#FFD014)、文字色(#FFF)、余白、角丸を追加
-               <span className="inline-block bg-[#FFD014] text-white rounded-full py-[5px] px-[8px] animate-fade-in">
+               <span className="inline-block bg-[#FFD014] rounded-full py-[5px] px-[8px] animate-fade-in">
                  YOKOYAMAにお任せください
                </span>
             ) : (
