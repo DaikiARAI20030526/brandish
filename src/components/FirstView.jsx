@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-// PC用画像 (従来通り)
+// PC用画像
 import logoImage from '../assets/YK_ロゴ仮.png';
 import logoheaderImage from '../assets/YK_ロゴ仮2.png';
 import liquidBottleImage from '../assets/YK_DS.png';
@@ -8,13 +8,12 @@ import cupNoodleImage from '../assets/YK_KM.png';
 import jarImage from '../assets/YK_BN.png';
 import chipsImage from '../assets/YK_PC.png';
 
-// ■ 修正: SP用画像のインポート (ファイル名の末尾に_SPを追加)
+// SP用画像
 import liquidBottleImageSP from '../assets/YK_DS_SP.png';
 import cupNoodleImageSP from '../assets/YK_KM_SP.png';
 import jarImageSP from '../assets/YK_BN_SP.png';
 import chipsImageSP from '../assets/YK_PC_SP.png';
 
-// ■ 修正: 画像リストをPC用とSP用に分離
 const IMAGES_PC = [
   liquidBottleImage,
   cupNoodleImage,
@@ -30,18 +29,15 @@ const IMAGES_SP = [
 ];
 
 // レーン生成ロジック
-// ■ 修正: 第2引数で画像リスト(sourceImages)を受け取るように変更
 const generateLaneData = (laneCount, sourceImages, repeatCount = 4) => {
   return Array.from({ length: laneCount }).map((_, laneIndex) => {
-    // 画像リストのコピーを作成
     let currentImages = [...sourceImages];
     
-    // 2列目（奇数レーン）の場合、画像の並び順を逆にする (1-2-3-4 -> 4-3-2-1)
+    // 2列目（奇数レーン）は逆順にする
     if (laneIndex % 2 !== 0) {
       currentImages.reverse();
     }
 
-    // オフセット計算（レーンごとに開始画像をずらす）
     const offset = laneIndex % currentImages.length;
     const rotatedImages = [...currentImages.slice(offset), ...currentImages.slice(0, offset)];
     
@@ -57,11 +53,8 @@ const generateLaneData = (laneCount, sourceImages, repeatCount = 4) => {
   });
 };
 
-// ■ 修正: SP版データ生成に IMAGES_SP を使用
-// (ループ数2回、アニメーション高速化のためDOM削減)
-const DATA_SP = generateLaneData(2, IMAGES_SP, 2); 
-
-// PC版データ生成に IMAGES_PC を使用
+// ■ 修正: ループ数を '2' から '3' に増やして途切れ（見切れ）を防止
+const DATA_SP = generateLaneData(2, IMAGES_SP, 3); 
 const DATA_PC = generateLaneData(6, IMAGES_PC, 4);
 
 const FirstView = () => {
@@ -72,7 +65,6 @@ const FirstView = () => {
   // 画像プリロード
   useEffect(() => {
     if (typeof window !== 'undefined' && window.innerWidth <= 768) {
-      // ■ 修正: SPの場合は IMAGES_SP をプリロード
       IMAGES_SP.forEach((src) => {
         const link = document.createElement('link');
         link.rel = 'preload';
@@ -81,7 +73,6 @@ const FirstView = () => {
         document.head.appendChild(link);
       });
     } else {
-      // PCの場合は IMAGES_PC をプリロード (必要であれば)
       IMAGES_PC.forEach((src) => {
         const img = new Image();
         img.src = src;
@@ -122,7 +113,6 @@ const FirstView = () => {
   return (
     <>
       <style>{`
-        /* GPUレイヤーを強制的に作成し、描画を安定させる */
         .force-gpu {
           transform: translate3d(0, 0, 0);
           -webkit-transform: translate3d(0, 0, 0);
@@ -144,7 +134,6 @@ const FirstView = () => {
           100% { transform: translateY(0%); }
         }
         
-        /* アニメーションの最適化 */
         .animate-flow-unified {
           animation: flowDown 62s linear infinite;
           transform-style: preserve-3d;
@@ -169,7 +158,6 @@ const FirstView = () => {
                   className="animate-flow-unified flex flex-col items-center w-full force-gpu"
                   style={{ 
                     animationDelay: `${lane.id * -15}s`,
-                    // SP版のアニメーション速度: 20s (高速化)
                     animationDuration: '20s'
                   }}
                 >
@@ -179,10 +167,11 @@ const FirstView = () => {
                       className="w-full flex justify-center flex-shrink-0"
                       style={{ paddingBottom: '60px' }}
                     >
+                      {/* ■ 修正: 画像幅を w-[280px] -> w-[220px] に縮小し、見切れを防止 */}
                       <img 
                         src={src} 
                         alt="" 
-                        className="w-[280px] h-auto object-contain opacity-60 drop-shadow-lg force-gpu" 
+                        className="w-[220px] h-auto object-contain opacity-60 drop-shadow-lg force-gpu" 
                         loading="eager"
                         decoding="async"
                         fetchPriority="high"
