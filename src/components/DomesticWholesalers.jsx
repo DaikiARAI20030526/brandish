@@ -119,7 +119,7 @@ const DomesticWholesalers = () => {
               imageStyleClass = "";
           }
 
-          // ■ 修正: ボトル (index === 1) のみ 1.4倍 (112%) に拡大し、他は元のサイズ (80%) を維持
+          // ボトルのみ拡大、他は通常サイズ
           const imageSizeClass = index === 1 
             ? "max-h-[112%] max-w-[112%]" 
             : "max-h-[80%] max-w-[80%]";
@@ -139,38 +139,43 @@ const DomesticWholesalers = () => {
               {/* ■ 1. 裏面（詳細レイヤー） */}
               <div className="absolute inset-0 text-gray-900 z-10 p-6 max-[530px]:p-4">
                 
-                <div className="absolute hidden lg:flex inset-0 items-center justify-center pl-[30%] pointer-events-none z-0">
+                {/* ■ 修正: hidden lg:flex を flex に変更し、SPでも画像を表示
+                    pl-[30%] により、画像は中央より右側に配置されます。
+                */}
+                <div className="absolute flex inset-0 items-center justify-center pl-[30%] pointer-events-none z-0">
                   <img 
                     src={cardBgImages[index]} 
                     alt="" 
-                    // ■ 修正: 動的に決定したサイズクラスを適用
                     className={`${imageSizeClass} object-contain transform transition-transform duration-500 ${imageStyleClass}`} 
                   />
                 </div>
 
-                {/* --- テキスト要素 --- */}
+                {/* --- テキスト要素 (SP版レイアウト修正) --- */}
                 
-                {/* Detail Title */}
+                {/* 1. Detail Title */}
+                {/* SP: left-4 top-4 (左上) */}
                 <p className="absolute font-bold opacity-90 z-10
                   left-32 top-12 text-[12px] 
-                  max-[530px]:left-1/2 max-[530px]:-translate-x-1/2 max-[530px]:top-4 max-[530px]:text-[10px] max-[530px]:leading-[19px]"
+                  max-[530px]:left-4 max-[530px]:top-4 max-[530px]:transform-none max-[530px]:text-[10px] max-[530px]:leading-[19px]"
                 >
                   {card.detailTitle}
                 </p>
                 
-                {/* Title */}
+                {/* 2. Title */}
+                {/* SP: left-4 top-10 (Detailの下) 左寄せ */}
                 <h4 className="absolute font-bold leading-tight z-10
                   left-32 top-20 text-left text-[26px]
-                  max-[530px]:left-1/2 max-[530px]:-translate-x-1/2 max-[530px]:top-[2.5rem] 
-                  max-[530px]:text-[18px] max-[530px]:leading-[18px] max-[530px]:w-full max-[530px]:text-center"
+                  max-[530px]:left-4 max-[530px]:top-10 max-[530px]:transform-none 
+                  max-[530px]:text-[18px] max-[530px]:leading-[18px] max-[530px]:w-auto max-[530px]:text-left"
                 >
                   {card.title}
                 </h4>
 
-                {/* Total */}
+                {/* 3. Total */}
+                {/* SP: left-4 top-20 (Titleの下) 左寄せ */}
                 <div className="absolute z-10
                   left-32 top-32 text-left
-                  max-[530px]:left-auto max-[530px]:right-4 max-[530px]:top-auto max-[530px]:bottom-4 max-[530px]:text-right"
+                  max-[530px]:left-4 max-[530px]:top-20 max-[530px]:bottom-auto max-[530px]:right-auto max-[530px]:text-left"
                 >
                   <p className="font-bold mb-2 text-[24px] 
                     max-[530px]:mb-1 max-[530px]:text-[18px] max-[530px]:leading-[18px]">
@@ -182,29 +187,31 @@ const DomesticWholesalers = () => {
                   </p>
                 </div>
 
-                {/* Group A & B */}
+                {/* 4. Group A & B */}
+                {/* SP: left-4 bottom-4 (左下) 左寄せ */}
+                {/* ■ 修正: テキストサイズを1.2倍縮小 (18px->15px, 14px->12px) */}
                 <div className="absolute text-left flex flex-col gap-4 z-10
                   left-32 bottom-12
                   max-[530px]:bottom-4 max-[530px]:left-4 max-[530px]:gap-3"
                 >
                   <div className="max-[530px]:block">
                     <p className="font-bold mb-2 text-[20px] 
-                      max-[530px]:mb-1 max-[530px]:text-[18px] max-[530px]:leading-[18px]">
+                      max-[530px]:mb-1 max-[530px]:text-[15px] max-[530px]:leading-[18px]">
                       {card.groupA.name}
                     </p>
                     <p className="text-[15px] 
-                      max-[530px]:text-[14px] max-[530px]:leading-[27px]">
+                      max-[530px]:text-[12px] max-[530px]:leading-[16px]">
                       {card.groupA.count}
                     </p>
                   </div>
                   
                   <div className="max-[530px]:block">
                     <p className="font-bold mb-2 text-[20px] 
-                      max-[530px]:mb-1 max-[530px]:text-[18px] max-[530px]:leading-[18px]">
+                      max-[530px]:mb-1 max-[530px]:text-[15px] max-[530px]:leading-[18px]">
                       {card.groupB.name}
                     </p>
                     <p className="text-[15px] 
-                      max-[530px]:text-[14px] max-[530px]:leading-[27px]">
+                      max-[530px]:text-[12px] max-[530px]:leading-[16px]">
                       {card.groupB.count}
                     </p>
                   </div>
