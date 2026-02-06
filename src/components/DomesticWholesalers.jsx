@@ -119,6 +119,11 @@ const DomesticWholesalers = () => {
               imageStyleClass = "";
           }
 
+          // ■ 修正: ボトル (index === 1) のみ 1.4倍 (112%) に拡大し、他は元のサイズ (80%) を維持
+          const imageSizeClass = index === 1 
+            ? "max-h-[112%] max-w-[112%]" 
+            : "max-h-[80%] max-w-[80%]";
+
           return (
             <div 
               key={index}
@@ -138,8 +143,8 @@ const DomesticWholesalers = () => {
                   <img 
                     src={cardBgImages[index]} 
                     alt="" 
-                    // ■ 修正: 最大サイズを1.4倍に拡大 (80% * 1.4 = 112%)
-                    className={`max-h-[112%] max-w-[112%] object-contain transform transition-transform duration-500 ${imageStyleClass}`} 
+                    // ■ 修正: 動的に決定したサイズクラスを適用
+                    className={`${imageSizeClass} object-contain transform transition-transform duration-500 ${imageStyleClass}`} 
                   />
                 </div>
 
