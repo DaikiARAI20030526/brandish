@@ -100,20 +100,20 @@ const DomesticWholesalers = () => {
         {cards.map((card, index) => {
           const isScrollActive = activeIndices.has(index);
 
-          // 個別画像スタイル
+          // ■ 修正: 画像の個別スタイル調整 (見切れ防止のため移動量を抑制・削除)
           let imageStyleClass = "";
           switch (index) {
-            case 0: 
-              imageStyleClass = "translate-x-[100px] translate-y-[20px]";
+            case 0: // BN (瓶)
+              imageStyleClass = "translate-x-[20px] translate-y-[10px]"; // 移動量を大幅に削減
               break;
-            case 1:
-              imageStyleClass = "rotate-[70deg] scale-125";
+            case 1: // DS (ボトル)
+              imageStyleClass = "rotate-[70deg] scale-110"; // scaleを少し控えめに
               break;
-            case 2:
-              imageStyleClass = "translate-x-[200px] translate-y-[40px]";
+            case 2: // KM (カップ麺)
+              imageStyleClass = "translate-x-[30px] translate-y-[15px] rotate-[-10deg]"; // 移動量を削減し回転を追加
               break;
-            case 3:
-              imageStyleClass = "translate-x-[250px] rotate-[2deg] scale-90";
+            case 3: // PC (ポテチ)
+              imageStyleClass = "rotate-[15deg] scale-95"; // 移動を削除、回転とスケールのみ
               break;
             default:
               imageStyleClass = "";
@@ -132,23 +132,24 @@ const DomesticWholesalers = () => {
             >
               
               {/* ■ 1. 裏面（詳細レイヤー） */}
-              <div 
-                className="absolute inset-0 text-gray-900 z-10 p-6 max-[530px]:p-4"
-              >
-                {/* ■ 修正: 画像を右側に配置 (justify-center -> justify-end)
-                    pr-32 (padding-right: 8rem) を追加して右端から少し離す
+              <div className="absolute inset-0 text-gray-900 z-10 p-6 max-[530px]:p-4">
+                
+                {/* ■ 修正: 画像コンテナの配置とサイズ調整による見切れ防止
+                    - justify-end pr-32 -> justify-center pl-[30%] に変更 (左側に余白を作って右寄りに配置)
+                    - max-h-[90%] max-w-[90%] -> max-h-[80%] max-w-[80%] に縮小して余裕を持たせる
                 */}
-                <div className="absolute hidden lg:flex inset-0 items-center justify-end pr-32 pointer-events-none z-0">
+                <div className="absolute hidden lg:flex inset-0 items-center justify-center pl-[30%] pointer-events-none z-0">
                   <img 
                     src={cardBgImages[index]} 
                     alt="" 
-                    className={`max-h-[90%] max-w-[90%] object-contain transform ${imageStyleClass}`} 
+                    // サイズを縮小して見切れを防ぐ
+                    className={`max-h-[80%] max-w-[80%] object-contain transform transition-transform duration-500 ${imageStyleClass}`} 
                   />
                 </div>
 
                 {/* --- テキスト要素 --- */}
                 
-                {/* 1. Detail Title */}
+                {/* Detail Title */}
                 <p className="absolute font-bold opacity-90 z-10
                   left-32 top-12 text-[12px] 
                   max-[530px]:left-1/2 max-[530px]:-translate-x-1/2 max-[530px]:top-4 max-[530px]:text-[10px] max-[530px]:leading-[19px]"
@@ -156,16 +157,16 @@ const DomesticWholesalers = () => {
                   {card.detailTitle}
                 </p>
                 
-                {/* 2. Title */}
+                {/* ■ 修正: Titleのフォントサイズを拡大 (PC版 24px -> 26px) */}
                 <h4 className="absolute font-bold leading-tight z-10
-                  left-32 top-20 text-left text-[24px]
+                  left-32 top-20 text-left text-[26px]
                   max-[530px]:left-1/2 max-[530px]:-translate-x-1/2 max-[530px]:top-[2.5rem] 
                   max-[530px]:text-[18px] max-[530px]:leading-[18px] max-[530px]:w-full max-[530px]:text-center"
                 >
                   {card.title}
                 </h4>
 
-                {/* 3. Total */}
+                {/* Total */}
                 <div className="absolute z-10
                   left-32 top-32 text-left
                   max-[530px]:left-auto max-[530px]:right-4 max-[530px]:top-auto max-[530px]:bottom-4 max-[530px]:text-right"
@@ -180,13 +181,7 @@ const DomesticWholesalers = () => {
                   </p>
                 </div>
 
-                {/* 4. Group A & B */}
-                {/* ■ 修正: 
-                   1. gap-10 -> gap-4 (1rem) に縮小
-                   2. テキストサイズを縮小: 
-                      - name: text-[24px] -> text-[20px]
-                      - count: text-[18px] -> text-[15px]
-                */}
+                {/* Group A & B */}
                 <div className="absolute text-left flex flex-col gap-4 z-10
                   left-32 bottom-12
                   max-[530px]:bottom-4 max-[530px]:left-4 max-[530px]:gap-3"
