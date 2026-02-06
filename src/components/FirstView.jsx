@@ -159,7 +159,7 @@ const FirstView = () => {
                   style={{ 
                     animationDelay: `${lane.id * -15}s`,
                     // ■ 修正: 速度を1.25倍減速 (20s * 1.25 = 25s)
-                    animationDuration: '25s'
+                    animationDuration: '35s'
                   }}
                 >
                   {lane.items.map((src, idx) => (
