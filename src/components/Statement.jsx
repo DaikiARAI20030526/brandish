@@ -2,21 +2,17 @@ import React from 'react';
 
 const Statement = () => {
   return (
-    // ■ 修正点: 
-    // 1. PC版上下パディング: pt-[60px] pb-[80px] に変更
-    // 2. 左右パディング: md:px-32 を追加して max-w-6xl 削除分の余白を確保
     <section className="pt-[60px] pb-[80px] max-[530px]:pt-[40px] max-[530px]:pb-[30px] px-4 md:px-32 bg-white">
       
-      {/* ■ 修正点: max-w-6xl mx-auto を削除し、w-full に変更 */}
       <div className="w-full text-left">
         
-        {/* SP版 gap-[2rem] は維持 */}
         <div className="flex flex-col gap-16 max-[530px]:gap-[2rem] text-left">
           
           {/* 上段のテキストブロック（太字） */}
           <div className="w-full">
             <p className="leading-relaxed font-bold text-[24px] max-[530px]:text-[18px]">
-              私たちは、あなただけの食品ブランドを持つための「すべて」を提供するパートナーです。
+              {/* ■ 修正: 「すべて」をspanで囲み、文字色を黄色(#FFD014)に変更 */}
+              私たちは、あなただけの食品ブランドを持つための<span className="text-[#FFD014]">「すべて」</span>を提供するパートナーです。
             </p>
           </div>
 
