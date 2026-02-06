@@ -53,7 +53,7 @@ const generateLaneData = (laneCount, sourceImages, repeatCount = 4) => {
   });
 };
 
-// ■ 修正: ループ数を '2' から '3' に増やして途切れ（見切れ）を防止
+// SP版データ生成
 const DATA_SP = generateLaneData(2, IMAGES_SP, 3); 
 const DATA_PC = generateLaneData(6, IMAGES_PC, 4);
 
@@ -158,7 +158,8 @@ const FirstView = () => {
                   className="animate-flow-unified flex flex-col items-center w-full force-gpu"
                   style={{ 
                     animationDelay: `${lane.id * -15}s`,
-                    animationDuration: '20s'
+                    // ■ 修正: 速度を1.25倍減速 (20s * 1.25 = 25s)
+                    animationDuration: '25s'
                   }}
                 >
                   {lane.items.map((src, idx) => (
@@ -167,7 +168,6 @@ const FirstView = () => {
                       className="w-full flex justify-center flex-shrink-0"
                       style={{ paddingBottom: '60px' }}
                     >
-                      {/* ■ 修正: 画像幅を w-[280px] -> w-[220px] に縮小し、見切れを防止 */}
                       <img 
                         src={src} 
                         alt="" 
