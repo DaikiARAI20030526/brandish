@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-// 【重要】ファイル名の再確認をお願いします
+// 【重要】
+// 読み込み速度を劇的に改善するには、以下の画像ファイル自体を
+// 「横幅300px〜400px程度」かつ「WebP形式」等に軽量化することを強く推奨します。
 import logoImage from '../assets/YK_ロゴ仮.png';
 import logoheaderImage from '../assets/YK_ロゴ仮2.png';
 import liquidBottleImage from '../assets/YK_DS.png';
@@ -8,7 +10,7 @@ import cupNoodleImage from '../assets/YK_KM.png';
 import jarImage from '../assets/YK_BN.png';
 import chipsImage from '../assets/YK_PC.png';
 
-// ■ 高速化設定: コンポーネント外で静的にデータを定義
+// ■ 高速化設定
 const IMAGES = [
   liquidBottleImage,
   cupNoodleImage,
@@ -16,15 +18,13 @@ const IMAGES = [
   chipsImage
 ];
 
-// ■ 修正: レーン生成ロジックに repeatCount (繰り返し回数) 引数を追加
-// SP版の画像枚数を制御できるように変更
+// レーン生成ロジック
 const generateLaneData = (laneCount, repeatCount = 4) => {
   return Array.from({ length: laneCount }).map((_, laneIndex) => {
     const offset = laneIndex % IMAGES.length;
     const rotatedImages = [...IMAGES.slice(offset), ...IMAGES.slice(0, offset)];
     
     let items = [];
-    // 指定された回数分だけ画像を積み上げる
     for (let i = 0; i < repeatCount; i++) {
       items = [...items, ...rotatedImages];
     }
@@ -36,8 +36,7 @@ const generateLaneData = (laneCount, repeatCount = 4) => {
   });
 };
 
-// ■ 修正: SP版のループ数を '4' から '2' に削減
-// これによりDOM数が半減し、SPでの描画負荷・メモリ消費を大幅に削減
+// SP版: ループ数を最小限(2)にし、DOM数を削減
 const DATA_SP = generateLaneData(2, 2); 
 const DATA_PC = generateLaneData(6, 4);
 
@@ -46,8 +45,17 @@ const FirstView = () => {
   const subText = "Produce　by　YOKOYAMA";
   const [isSticky, setIsSticky] = useState(false);
 
-  // スクロール検知
+  // 画像プリロード（コンポーネントマウント時に即座にブラウザキャッシュに入れる）
   useEffect(() => {
+    // SP版の画像のみを先行して強制読み込み
+    if (window.innerWidth <= 768) {
+      IMAGES.forEach((src) => {
+        const img = new Image();
+        img.src = src;
+        img.decode().catch(() => {}); // エラー無視でデコード試行
+      });
+    }
+
     const handleScroll = () => {
       requestAnimationFrame(() => {
         const threshold = window.innerHeight * 0.9;
@@ -55,7 +63,7 @@ const FirstView = () => {
       });
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const scrollToSection = (id) => {
@@ -65,8 +73,6 @@ const FirstView = () => {
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
       window.scrollTo({ top: offsetPosition, behavior: "smooth" });
-    } else {
-      console.warn(`Element with id "${id}" not found.`);
     }
   };
 
@@ -84,9 +90,11 @@ const FirstView = () => {
   return (
     <>
       <style>{`
-        /* GPU強制使用のための最適化 */
-        .hardware-accelerated {
-          transform: translateZ(0);
+        /* GPU最適化: 3D変形を強制してレイヤーを分離 */
+        .gpu-layer {
+          transform: translate3d(0, 0, 0);
+          backface-visibility: hidden;
+          perspective: 1000px;
           will-change: transform;
         }
 
@@ -105,8 +113,6 @@ const FirstView = () => {
         
         .animate-flow-unified {
           animation: flowDown 62s linear infinite;
-          backface-visibility: hidden;
-          perspective: 1000px;
         }
       `}</style>
 
@@ -114,18 +120,21 @@ const FirstView = () => {
       <section className="relative h-[90dvh] w-full bg-white overflow-hidden">
 
         {/* 背景アニメーションレイヤー */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
+        {/* contain: strict で描画計算をこのエリア内に閉じ込める */}
+        <div 
+          className="absolute inset-0 overflow-hidden pointer-events-none select-none"
+          style={{ contain: 'strict' }} 
+        >
           
           {/* === SP用レイアウト === */}
-          {/* hardware-accelerated は親コンテナと動く要素のみに適用 */}
           <div 
-            className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] flex md:hidden justify-center gap-0 hardware-accelerated"
+            className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] flex md:hidden justify-center gap-0 gpu-layer"
             style={{ transform: `translate(-50%, -50%) rotate(25deg)` }}
           >
             {DATA_SP.map((lane) => (
               <div key={lane.id} className="flex-1 px-1 relative h-full">
                 <div 
-                  className="animate-flow-unified flex flex-col items-center w-full hardware-accelerated"
+                  className="animate-flow-unified flex flex-col items-center w-full gpu-layer"
                   style={{ animationDelay: `${lane.id * -15}s` }}
                 >
                   {lane.items.map((src, idx) => (
@@ -134,13 +143,17 @@ const FirstView = () => {
                       className="w-full flex justify-center flex-shrink-0"
                       style={{ paddingBottom: '60px' }}
                     >
-                      {/* ■ 修正: fetchPriority="high" を追加し、読み込み優先度を最高に設定 */}
+                      {/* ■ SP最適化設定:
+                         - decoding="sync": 画像が小さい前提で、表示タイミングを合わせる
+                         - loading="eager": 遅延読み込みを無効化
+                         - fetchPriority="high": 最優先でネットワークリクエスト
+                      */}
                       <img 
                         src={src} 
                         alt="" 
                         className="w-[280px] h-auto object-contain opacity-60 drop-shadow-lg" 
                         loading="eager"
-                        decoding="async"
+                        decoding="sync"
                         fetchPriority="high"
                       />
                     </div>
@@ -152,13 +165,13 @@ const FirstView = () => {
 
           {/* === PC用レイアウト === */}
           <div 
-            className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] hidden md:flex justify-center gap-0 hardware-accelerated"
+            className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] hidden md:flex justify-center gap-0 gpu-layer"
             style={{ transform: `translate(-50%, -50%) rotate(45deg)` }}
           >
             {DATA_PC.map((lane) => (
               <div key={lane.id} className="flex-1 px-2 relative h-full">
                 <div 
-                  className="animate-flow-unified flex flex-col items-center w-full hardware-accelerated"
+                  className="animate-flow-unified flex flex-col items-center w-full gpu-layer"
                   style={{ animationDelay: `${lane.id * -10}s` }}
                 >
                   {lane.items.map((src, idx) => (
@@ -185,7 +198,6 @@ const FirstView = () => {
         </div>
 
         {/* コンテンツレイヤー */}
-        {/* ■ 修正: 静的なテキスト要素から hardware-accelerated クラスを削除 (不要なメモリ消費を防ぐ) */}
         <div className="relative z-10 w-full h-full flex flex-col items-center justify-start pt-10 px-4 pointer-events-none">
           
           <h1 className="text-[22px] md:text-[22px] font-bold text-gray-900 text-center leading-[1.6] md:leading-[1.8] whitespace-pre-wrap pointer-events-auto">
