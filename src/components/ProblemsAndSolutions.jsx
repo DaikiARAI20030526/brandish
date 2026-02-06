@@ -243,9 +243,7 @@ const ProblemsAndSolutions = () => {
                         color: '#111827'
                       }}
                     >
-                      {/* ■ 修正箇所: PC版のテキストコンテナに 'pr-[160px]' を追加 
-                         これによりチェックマーク(right-12)と被る前にテキストが折り返されます
-                      */}
+                      {/* PC版のテキストコンテナに 'pr-[160px]' を追加して重なり防止 */}
                       <div className={`${isMobile ? 'flex-1 py-8' : 'w-full pr-[160px]'}`}>
                         <p className={`font-semibold whitespace-pre-wrap ${isMobile ? 'text-[18px] leading-[35px]' : 'text-[24px] leading-[47px]'}`}>
                           {item.solution}
@@ -254,8 +252,10 @@ const ProblemsAndSolutions = () => {
 
                       {isMobile && (
                         <div className="flex-none">
-                          <div className="flex items-center justify-center w-12 h-12 bg-[#FFD014] rounded-full">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          {/* ■ 修正: SP版のサイズを小さく変更 (w-12 h-12 -> w-8 h-8) */}
+                          <div className="flex items-center justify-center w-8 h-8 bg-[#FFD014] rounded-full">
+                            {/* ■ 修正: SVGサイズを変更 (h-8 w-8 -> h-5 w-5) */}
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                               <path d="M5 13l4 4L19 7" /> 
                             </svg>
                           </div>
@@ -264,8 +264,10 @@ const ProblemsAndSolutions = () => {
 
                       {!isMobile && (
                         <div className="absolute right-12 top-1/2 transform -translate-y-1/2">
-                          <div className="flex items-center justify-center w-24 h-24 bg-[#FFD014] rounded-full">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          {/* ■ 修正: PC版のサイズを小さく変更 (w-24 h-24 -> w-16 h-16) */}
+                          <div className="flex items-center justify-center w-16 h-16 bg-[#FFD014] rounded-full">
+                            {/* ■ 修正: SVGサイズを変更 (h-14 w-14 -> h-9 w-9) */}
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-9 w-9 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                               <path d="M5 13l4 4L19 7" /> 
                             </svg>
                           </div>
