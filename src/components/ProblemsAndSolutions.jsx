@@ -104,7 +104,7 @@ const ProblemsAndSolutions = () => {
       ref={sectionRef} 
       className="relative" 
     
-      style={{ height: isMobile ? 'auto' : '300vh' }}
+      style={{ height: isMobile ? 'auto' : '230vh' }}
     >
       
       <div className={`
