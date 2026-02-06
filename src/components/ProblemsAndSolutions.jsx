@@ -103,8 +103,8 @@ const ProblemsAndSolutions = () => {
     <section 
       ref={sectionRef} 
       className="relative" 
-      // ■ 修正点(PC): 400vhに変更 (SPはautoのまま)
-      style={{ height: isMobile ? 'auto' : '400vh' }}
+    
+      style={{ height: isMobile ? 'auto' : '360vh' }}
     >
       
       <div className={`
