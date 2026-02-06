@@ -13,3 +13,15 @@
     @apply text-gray-900 bg-white;
   }
 }
+
+body::after {
+  content: "";
+  position: fixed; /* 画面に対して位置を固定（スクロール追従しない） */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid #FFD014; /* 枠線の色と太さ */
+  z-index: 9999; /* 最前面に表示（ヘッダー画像などに隠れないように） */
+  pointer-events: none; /* 重要：枠線がクリックを邪魔しないようにする */
+}
