@@ -100,20 +100,20 @@ const DomesticWholesalers = () => {
         {cards.map((card, index) => {
           const isScrollActive = activeIndices.has(index);
 
-          // ■ 修正: 画像の個別スタイル調整 (見切れ防止のため移動量を抑制・削除)
+          // 画像の個別スタイル調整
           let imageStyleClass = "";
           switch (index) {
             case 0: // BN (瓶)
-              imageStyleClass = "translate-x-[20px] translate-y-[10px]"; // 移動量を大幅に削減
+              imageStyleClass = "translate-x-[20px] translate-y-[10px]";
               break;
             case 1: // DS (ボトル)
-              imageStyleClass = "rotate-[70deg] scale-110"; // scaleを少し控えめに
+              imageStyleClass = "rotate-[70deg] scale-110";
               break;
             case 2: // KM (カップ麺)
-              imageStyleClass = "translate-x-[30px] translate-y-[15px] rotate-[-10deg]"; // 移動量を削減し回転を追加
+              imageStyleClass = "translate-x-[30px] translate-y-[15px] rotate-[-10deg]";
               break;
             case 3: // PC (ポテチ)
-              imageStyleClass = "rotate-[15deg] scale-95"; // 移動を削除、回転とスケールのみ
+              imageStyleClass = "rotate-[15deg] scale-95";
               break;
             default:
               imageStyleClass = "";
@@ -134,16 +134,12 @@ const DomesticWholesalers = () => {
               {/* ■ 1. 裏面（詳細レイヤー） */}
               <div className="absolute inset-0 text-gray-900 z-10 p-6 max-[530px]:p-4">
                 
-                {/* ■ 修正: 画像コンテナの配置とサイズ調整による見切れ防止
-                    - justify-end pr-32 -> justify-center pl-[30%] に変更 (左側に余白を作って右寄りに配置)
-                    - max-h-[90%] max-w-[90%] -> max-h-[80%] max-w-[80%] に縮小して余裕を持たせる
-                */}
                 <div className="absolute hidden lg:flex inset-0 items-center justify-center pl-[30%] pointer-events-none z-0">
                   <img 
                     src={cardBgImages[index]} 
                     alt="" 
-                    // サイズを縮小して見切れを防ぐ
-                    className={`max-h-[80%] max-w-[80%] object-contain transform transition-transform duration-500 ${imageStyleClass}`} 
+                    // ■ 修正: 最大サイズを1.4倍に拡大 (80% * 1.4 = 112%)
+                    className={`max-h-[112%] max-w-[112%] object-contain transform transition-transform duration-500 ${imageStyleClass}`} 
                   />
                 </div>
 
@@ -157,7 +153,7 @@ const DomesticWholesalers = () => {
                   {card.detailTitle}
                 </p>
                 
-                {/* ■ 修正: Titleのフォントサイズを拡大 (PC版 24px -> 26px) */}
+                {/* Title */}
                 <h4 className="absolute font-bold leading-tight z-10
                   left-32 top-20 text-left text-[26px]
                   max-[530px]:left-1/2 max-[530px]:-translate-x-1/2 max-[530px]:top-[2.5rem] 
