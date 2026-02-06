@@ -3,7 +3,20 @@ import React from 'react';
 const CompanyInfo = () => {
   const companyData = [
     { label: '名称', value: '株式会社YOKOYAMA' },
-    { label: '公式web URL', value: 'https://yokoyama-foods.com/' }, // ■ 追加箇所
+    { 
+      label: '公式web URL', 
+      // ■ 修正: クリック可能なリンクに変更
+      value: (
+        <a 
+          href="https://yokoyama-foods.com/" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:underline break-all"
+        >
+          https://yokoyama-foods.com/
+        </a>
+      ) 
+    },
     { 
       label: '所在地', 
       value: (
@@ -54,10 +67,6 @@ const CompanyInfo = () => {
           {companyData.map((item, idx) => (
             <div key={idx} className="flex border-b border-[#FFD014] pb-4 justify-between items-center">
               
-              {/* ■ 修正: レスポンシブ対応
-                  SP: text-sm leading-[27px] (元のサイズ)
-                  PC: md:text-[17px] md:leading-[32px] (拡大サイズ)
-              */}
               <div className="w-40 font-medium flex-shrink-0 text-sm leading-[27px] md:text-[17px] md:leading-[32px]">
                 {item.label}
               </div>
