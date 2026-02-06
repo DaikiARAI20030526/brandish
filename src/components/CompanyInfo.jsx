@@ -16,8 +16,8 @@ const CompanyInfo = () => {
       
       <div className="px-4 md:pl-32 md:pr-8">
         
-        {/* ■ 修正: タイトル背景に黄色いオブジェクトを追加 */}
-        <h2 className="text-left mb-12">
+        {/* ■ 修正: mb-12 (3rem) -> mb-8 (2rem) に変更 */}
+        <h2 className="text-left mb-8">
           <span className="inline-block bg-[#FFD014] text-black rounded-full py-[9px] px-[25px] text-xl md:text-[24px] md:leading-[47px] font-bold">
             会社情報
           </span>
@@ -25,15 +25,12 @@ const CompanyInfo = () => {
         
         <div className="space-y-6">
           {companyData.map((item, idx) => (
-            // ■ 修正: border-gray-200 -> border-[#FFD014] (黄色に変更)
             <div key={idx} className="flex border-b border-[#FFD014] pb-4 justify-between items-center">
               
-              {/* ■ 修正: テキストサイズを1.2倍に拡大 (14px -> 17px, leading 27 -> 32) */}
               <div className="w-40 font-medium flex-shrink-0 text-[17px] leading-[32px]">
                 {item.label}
               </div>
               
-              {/* ■ 修正: 同上 */}
               <div className="flex-1 text-right text-[17px] leading-[32px]">
                 {item.value}
               </div>
