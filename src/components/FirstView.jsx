@@ -61,6 +61,8 @@ const FirstView = () => {
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
       window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+    } else {
+      console.warn(`Element with id "${id}" not found.`); // デバッグ用: IDが見つからない場合に警告
     }
   };
 
@@ -200,7 +202,7 @@ const FirstView = () => {
       {/* ■ Headerエリア */}
       <header className="sticky top-0 z-50 h-[10dvh] min-h-[60px] w-full flex items-center pl-2 pr-4 md:px-8 transition-all duration-300 bg-white/60 backdrop-blur-sm">
         
-        {/* 左側: ロゴエリア (左寄せ固定) */}
+        {/* 左側: ロゴエリア */}
         <div className="absolute left-2 md:left-8 flex items-center justify-start pointer-events-none">
           {isSticky && (
             <img 
@@ -211,13 +213,9 @@ const FirstView = () => {
           )}
         </div>
 
-        {/* 右側: ナビゲーションメニュー (全て右寄せに戻す) */}
-        {/* ■ 修正:
-           - md:text-[15px] (22pxから約1.5倍縮小)
-           - md:gap-[50px] (40pxから1.25倍拡大)
-           - 中央揃えを廃止し、ml-autoで一括右寄せ
-        */}
-        <div className="ml-auto flex items-center gap-6 md:gap-[50px] text-[11px] md:text-[15px] font-bold text-gray-800 z-10 cursor-pointer">
+        {/* 右側: ナビゲーションメニュー */}
+        {/* ■ 修正: テキストサイズを拡大 (15px -> 17px) */}
+        <div className="ml-auto flex items-center gap-6 md:gap-[50px] text-[11px] md:text-[17px] font-bold text-gray-800 z-10 cursor-pointer">
           <button onClick={() => scrollToSection('statement')} className="hover:text-amber-500 transition-colors">
             MyBrandishとは？
           </button>
