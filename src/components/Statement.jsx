@@ -2,7 +2,7 @@ import React from 'react';
 
 const Statement = () => {
   return (
-    <section className="pt-[60px] pb-[80px] max-[530px]:pt-[40px] max-[530px]:pb-[30px] px-4 md:px-32 bg-white">
+    <section id="statement"className="pt-[60px] pb-[80px] max-[530px]:pt-[40px] max-[530px]:pb-[30px] px-4 md:px-32 bg-white">
       
       <div className="w-full text-left">
         
