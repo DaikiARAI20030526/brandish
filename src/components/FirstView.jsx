@@ -62,7 +62,7 @@ const FirstView = () => {
       const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
       window.scrollTo({ top: offsetPosition, behavior: "smooth" });
     } else {
-      console.warn(`Element with id "${id}" not found.`); // デバッグ用: IDが見つからない場合に警告
+      console.warn(`Element with id "${id}" not found.`);
     }
   };
 
@@ -214,8 +214,11 @@ const FirstView = () => {
         </div>
 
         {/* 右側: ナビゲーションメニュー */}
-        {/* ■ 修正: テキストサイズを拡大 (15px -> 17px) */}
-        <div className="ml-auto flex items-center gap-6 md:gap-[50px] text-[11px] md:text-[17px] font-bold text-gray-800 z-10 cursor-pointer">
+        {/* ■ 修正:
+           - text-[9.5px] (SP: 11px - 1.5px)
+           - gap-4 (SP: 24px / 1.5 = 16px)
+        */}
+        <div className="ml-auto flex items-center gap-4 md:gap-[50px] text-[9.5px] md:text-[17px] font-bold text-gray-800 z-10 cursor-pointer">
           <button onClick={() => scrollToSection('statement')} className="hover:text-amber-500 transition-colors">
             MyBrandishとは？
           </button>
@@ -224,7 +227,11 @@ const FirstView = () => {
           </button>
           
           <button onClick={() => scrollToSection('contact')}>
-            <span className="inline-block bg-[#FFD014] text-black rounded-full py-2 px-6 transition hover:bg-[#e6bb12]">
+            {/* ■ 修正:
+               - px-[22px] (SP: 24px - 2px)
+               - md:px-6 (PC: 維持)
+            */}
+            <span className="inline-block bg-[#FFD014] text-black rounded-full py-2 px-[22px] md:px-6 transition hover:bg-[#e6bb12]">
               お問い合わせ
             </span>
           </button>
