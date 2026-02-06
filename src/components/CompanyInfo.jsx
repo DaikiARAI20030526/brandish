@@ -12,31 +12,29 @@ const CompanyInfo = () => {
   ];
 
   return (
-    // ■ 修正点: 背景無色(bg-white), padding-top削除(pt-0)
     <section className="pb-20 pt-0 bg-white">
       
-      {/* ■ 修正点: PC版 padding-left 8rem(pl-32), padding-right 2rem(pr-8) */}
       <div className="px-4 md:pl-32 md:pr-8">
         
-        {/* ■ 修正点: 
-            - 絵文字削除
-            - 左寄せ (text-left)
-            - 24px / leading-[47px]
-        */}
-        <h2 className="text-xl md:text-[24px] md:leading-[47px] font-bold text-left mb-12">
-          会社情報
+        {/* ■ 修正: タイトル背景に黄色いオブジェクトを追加 */}
+        <h2 className="text-left mb-12">
+          <span className="inline-block bg-[#FFD014] text-black rounded-full py-[9px] px-[25px] text-xl md:text-[24px] md:leading-[47px] font-bold">
+            会社情報
+          </span>
         </h2>
         
-        <div className="space-y-6 text-sm">
+        <div className="space-y-6">
           {companyData.map((item, idx) => (
-            <div key={idx} className="flex border-b border-gray-200 pb-4 justify-between items-center">
-              {/* ラベル: 14px / leading-[27px] */}
-              <div className="w-40 font-medium flex-shrink-0 leading-[27px]">
+            // ■ 修正: border-gray-200 -> border-[#FFD014] (黄色に変更)
+            <div key={idx} className="flex border-b border-[#FFD014] pb-4 justify-between items-center">
+              
+              {/* ■ 修正: テキストサイズを1.2倍に拡大 (14px -> 17px, leading 27 -> 32) */}
+              <div className="w-40 font-medium flex-shrink-0 text-[17px] leading-[32px]">
                 {item.label}
               </div>
               
-              {/* 値: 14px / leading-[27px] */}
-              <div className="flex-1 text-right leading-[27px]">
+              {/* ■ 修正: 同上 */}
+              <div className="flex-1 text-right text-[17px] leading-[32px]">
                 {item.value}
               </div>
             </div>
