@@ -3,11 +3,31 @@ import React from 'react';
 const CompanyInfo = () => {
   const companyData = [
     { label: '名称', value: '株式会社YOKOYAMA' },
-    { label: '所在地', value: '〒169-0051 東京都新宿区西早稲田3-1-6-402' },
+    { 
+      label: '所在地', 
+      // ■ 修正: 新宿区と西早稲田の間で改行(<br />)を追加
+      value: (
+        <>
+          〒169-0051 東京都新宿区<br />
+          西早稲田3-1-6-402
+        </>
+      )
+    },
     { label: '設立', value: '2022年1月11日' },
     { label: '事業内容', value: '食品の卸売業、加工食品の企画販売' },
     { label: '資本金', value: '30,000,000円' },
-    { label: '主要取引先', value: '三菱食品株式会社/三井物産株式会社/国分グループ本社株式会社/加藤産業株式会社' },
+    { 
+      label: '主要取引先', 
+      // ■ 修正: 単語ごとに inline-block を適用し、単語の途中で改行されないように設定
+      value: (
+        <>
+          <span className="inline-block">三菱食品株式会社/</span>
+          <span className="inline-block">三井物産株式会社/</span>
+          <span className="inline-block">国分グループ本社株式会社/</span>
+          <span className="inline-block">加藤産業株式会社</span>
+        </>
+      )
+    },
     { label: '取引先銀行', value: 'みずほ銀行、西武信用金庫、GMOあおぞらネット銀行' }
   ];
 
@@ -16,7 +36,6 @@ const CompanyInfo = () => {
       
       <div className="px-4 md:pl-32 md:pr-8">
         
-        {/* ■ 修正: mb-12 (3rem) -> mb-8 (2rem) に変更 */}
         <h2 className="text-left mb-8">
           <span className="inline-block bg-[#FFD014] text-black rounded-full py-[9px] px-[25px] text-xl md:text-[24px] md:leading-[47px] font-bold">
             会社情報
@@ -31,6 +50,7 @@ const CompanyInfo = () => {
                 {item.label}
               </div>
               
+              {/* 値部分: JSX(改行やinline-block)もレンダリングできるようにそのまま表示 */}
               <div className="flex-1 text-right text-[17px] leading-[32px]">
                 {item.value}
               </div>
