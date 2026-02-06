@@ -52,7 +52,6 @@ const DomesticWholesalers = () => {
       // 530px以下の場合のみ処理を実行
       if (window.innerWidth > 530) return;
 
-      // アニメーション開始位置: 画面の50%
       const threshold = window.innerHeight * 0.50; 
       const newActiveIndices = new Set();
 
@@ -60,13 +59,11 @@ const DomesticWholesalers = () => {
         if (!ref) return;
         const rect = ref.getBoundingClientRect();
 
-        // カードの上辺(rect.top)が、画面の50%ライン(threshold)を通過したらアクティブ化
         if (rect.top <= threshold) {
           newActiveIndices.add(index);
         }
       });
 
-      // 状態に変更がある場合のみ更新
       setActiveIndices(prev => {
         if (prev.size !== newActiveIndices.size) return newActiveIndices;
         for (let idx of newActiveIndices) {
@@ -77,9 +74,8 @@ const DomesticWholesalers = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
-    window.addEventListener('resize', handleScroll); // リサイズ時も判定
+    window.addEventListener('resize', handleScroll);
     
-    // 初回実行
     handleScroll();
 
     return () => {
@@ -89,18 +85,14 @@ const DomesticWholesalers = () => {
   }, []);
 
   return (
-    // SP版 pt-[4rem]
     <section className="pb-20 pt-32 max-[530px]:pt-[4rem] bg-white w-full">
       
       <div className="w-full text-left pl-32 max-[530px]:pl-[20px]">
-        
-        {/* ■ 修正: タイトル装飾（黄色背景）を追加 */}
         <h2 className="mb-12 max-[530px]:mb-[2rem]">
           <span className="inline-block bg-[#FFD014] text-black rounded-full py-[9px] px-[25px] text-[24px] font-bold max-[530px]:text-[18px]">
             国内提案先例
           </span>
         </h2>
-
       </div>
 
       {/* カードリスト */}
@@ -108,7 +100,7 @@ const DomesticWholesalers = () => {
         {cards.map((card, index) => {
           const isScrollActive = activeIndices.has(index);
 
-          // ■ 画像配置スタイル (PC)
+          // 個別画像スタイル
           let imageStyleClass = "";
           switch (index) {
             case 0: 
@@ -131,7 +123,6 @@ const DomesticWholesalers = () => {
             <div 
               key={index}
               ref={el => cardRefs.current[index] = el}
-              // SP版 h-[255px]
               className="group relative w-full h-[450px] max-[530px]:h-[255px] overflow-hidden cursor-pointer"
               style={{
                 borderTop: '1.5px solid #d1d5db',
@@ -144,8 +135,10 @@ const DomesticWholesalers = () => {
               <div 
                 className="absolute inset-0 text-gray-900 z-10 p-6 max-[530px]:p-4"
               >
-                {/* 画像レイヤー（PCのみ） */}
-                <div className="absolute hidden lg:flex inset-0 items-center justify-center pointer-events-none z-0">
+                {/* ■ 修正: 画像を右側に配置 (justify-center -> justify-end)
+                    pr-32 (padding-right: 8rem) を追加して右端から少し離す
+                */}
+                <div className="absolute hidden lg:flex inset-0 items-center justify-end pr-32 pointer-events-none z-0">
                   <img 
                     src={cardBgImages[index]} 
                     alt="" 
@@ -155,12 +148,7 @@ const DomesticWholesalers = () => {
 
                 {/* --- テキスト要素 --- */}
                 
-                {/* ■ 修正: PC版レイアウト変更
-                  全ての要素を左側 (left-32) に統一し、上から順に配置
-                */}
-
-                {/* 1. Detail Title (参考例) */}
-                {/* PC: left-32, top-12 / SP: 中央上部 (変更なし) */}
+                {/* 1. Detail Title */}
                 <p className="absolute font-bold opacity-90 z-10
                   left-32 top-12 text-[12px] 
                   max-[530px]:left-1/2 max-[530px]:-translate-x-1/2 max-[530px]:top-4 max-[530px]:text-[10px] max-[530px]:leading-[19px]"
@@ -168,8 +156,7 @@ const DomesticWholesalers = () => {
                   {card.detailTitle}
                 </p>
                 
-                {/* 2. Title (SUPER MARKET等) */}
-                {/* PC: left-32, top-20 (detailの下), 左寄せ / SP: 中央 (変更なし) */}
+                {/* 2. Title */}
                 <h4 className="absolute font-bold leading-tight z-10
                   left-32 top-20 text-left text-[24px]
                   max-[530px]:left-1/2 max-[530px]:-translate-x-1/2 max-[530px]:top-[2.5rem] 
@@ -178,8 +165,7 @@ const DomesticWholesalers = () => {
                   {card.title}
                 </h4>
 
-                {/* 3. Total (国内総店舗) */}
-                {/* PC: left-32, top-32 (Titleの下), 左寄せ / SP: 右下 (変更なし) */}
+                {/* 3. Total */}
                 <div className="absolute z-10
                   left-32 top-32 text-left
                   max-[530px]:left-auto max-[530px]:right-4 max-[530px]:top-auto max-[530px]:bottom-4 max-[530px]:text-right"
@@ -195,28 +181,33 @@ const DomesticWholesalers = () => {
                 </div>
 
                 {/* 4. Group A & B */}
-                {/* PC: left-32, bottom-12 (下部), 左寄せ / SP: 左下 (変更なし) */}
-                <div className="absolute text-left flex flex-col gap-10 z-10
+                {/* ■ 修正: 
+                   1. gap-10 -> gap-4 (1rem) に縮小
+                   2. テキストサイズを縮小: 
+                      - name: text-[24px] -> text-[20px]
+                      - count: text-[18px] -> text-[15px]
+                */}
+                <div className="absolute text-left flex flex-col gap-4 z-10
                   left-32 bottom-12
                   max-[530px]:bottom-4 max-[530px]:left-4 max-[530px]:gap-3"
                 >
                   <div className="max-[530px]:block">
-                    <p className="font-bold mb-2 text-[24px] 
+                    <p className="font-bold mb-2 text-[20px] 
                       max-[530px]:mb-1 max-[530px]:text-[18px] max-[530px]:leading-[18px]">
                       {card.groupA.name}
                     </p>
-                    <p className="text-[18px] 
+                    <p className="text-[15px] 
                       max-[530px]:text-[14px] max-[530px]:leading-[27px]">
                       {card.groupA.count}
                     </p>
                   </div>
                   
                   <div className="max-[530px]:block">
-                    <p className="font-bold mb-2 text-[24px] 
+                    <p className="font-bold mb-2 text-[20px] 
                       max-[530px]:mb-1 max-[530px]:text-[18px] max-[530px]:leading-[18px]">
                       {card.groupB.name}
                     </p>
-                    <p className="text-[18px] 
+                    <p className="text-[15px] 
                       max-[530px]:text-[14px] max-[530px]:leading-[27px]">
                       {card.groupB.count}
                     </p>
@@ -236,7 +227,6 @@ const DomesticWholesalers = () => {
                   backgroundPosition: 'top center'
                 }}
               >
-                {/* シャッターテキスト */}
                 <h3 className="text-[32px] md:text-[60px] font-semibold tracking-wide text-gray-900 text-center uppercase px-4 max-[530px]:text-[24px]">
                   {card.title}
                 </h3>
