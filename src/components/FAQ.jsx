@@ -19,19 +19,25 @@ const FAQ = () => {
   return (
     <section className="pb-20 pt-0 bg-white">
       
-      {/* PC版: ml-32 (8rem), mr-12 (3rem) */}
-      <div className="mx-4 md:ml-32 md:mr-12">
+      {/* ■ 修正: 右マージンを削除してLineを画面右端まで伸ばす
+          元: mx-4 (ml-4 mr-4) md:ml-32 md:mr-12
+          新: ml-4 mr-0 md:ml-32 md:mr-0
+      */}
+      <div className="ml-4 mr-0 md:ml-32 md:mr-0">
         
-        <h2 className="text-xl md:text-[24px] font-bold text-left mb-6">
-          FAQ
+        {/* ■ 修正: タイトル背景に黄色いオブジェクトを追加 */}
+        <h2 className="text-left mb-6">
+          <span className="inline-block bg-[#FFD014] text-black rounded-full py-[9px] px-[25px] text-xl md:text-[24px] font-bold">
+            FAQ
+          </span>
         </h2>
         
         <div className="space-y-8">
           {faqs.map((faq, idx) => (
-            // ■ 修正点: 
-            // 1. pb-4 (1rem) [PCはmd:pb-6で維持]
-            // 2. flex flex-col gap-2 (0.5rem) [PCはmd:gap-0で維持]
-            <div key={idx} className="border-b border-gray-200 pb-4 md:pb-6 flex flex-col gap-2 md:gap-0">
+            // ■ 修正: 
+            // 1. border-gray-200 -> border-[#FFD014] (黄色に変更)
+            // 2. pr-4 md:pr-12 を追加 (枠線は右端まで行くが、テキストには余白を持たせる)
+            <div key={idx} className="border-b border-[#FFD014] pb-4 md:pb-6 flex flex-col gap-2 md:gap-0 pr-4 md:pr-12">
               <div className="text-sm md:text-[24px] md:leading-[47px] font-bold">
                 Q. {faq.q}
               </div>
