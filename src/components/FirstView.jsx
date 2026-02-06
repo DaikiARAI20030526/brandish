@@ -16,14 +16,16 @@ const IMAGES = [
   chipsImage
 ];
 
-// レーン生成ロジック
-const generateLaneData = (laneCount) => {
+// ■ 修正: レーン生成ロジックに repeatCount (繰り返し回数) 引数を追加
+// SP版の画像枚数を制御できるように変更
+const generateLaneData = (laneCount, repeatCount = 4) => {
   return Array.from({ length: laneCount }).map((_, laneIndex) => {
     const offset = laneIndex % IMAGES.length;
     const rotatedImages = [...IMAGES.slice(offset), ...IMAGES.slice(0, offset)];
     
     let items = [];
-    for (let i = 0; i < 4; i++) {
+    // 指定された回数分だけ画像を積み上げる
+    for (let i = 0; i < repeatCount; i++) {
       items = [...items, ...rotatedImages];
     }
 
@@ -34,8 +36,10 @@ const generateLaneData = (laneCount) => {
   });
 };
 
-const DATA_SP = generateLaneData(2);
-const DATA_PC = generateLaneData(6);
+// ■ 修正: SP版のループ数を '4' から '2' に削減
+// これによりDOM数が半減し、SPでの描画負荷・メモリ消費を大幅に削減
+const DATA_SP = generateLaneData(2, 2); 
+const DATA_PC = generateLaneData(6, 4);
 
 const FirstView = () => {
   const titleText = "あなたの\"うまい\"が、全国の食卓へ\n食の挑戦を、仕組みで支える";
@@ -113,6 +117,7 @@ const FirstView = () => {
         <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
           
           {/* === SP用レイアウト === */}
+          {/* hardware-accelerated は親コンテナと動く要素のみに適用 */}
           <div 
             className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] flex md:hidden justify-center gap-0 hardware-accelerated"
             style={{ transform: `translate(-50%, -50%) rotate(25deg)` }}
@@ -129,12 +134,14 @@ const FirstView = () => {
                       className="w-full flex justify-center flex-shrink-0"
                       style={{ paddingBottom: '60px' }}
                     >
+                      {/* ■ 修正: fetchPriority="high" を追加し、読み込み優先度を最高に設定 */}
                       <img 
                         src={src} 
                         alt="" 
                         className="w-[280px] h-auto object-contain opacity-60 drop-shadow-lg" 
                         loading="eager"
                         decoding="async"
+                        fetchPriority="high"
                       />
                     </div>
                   ))}
@@ -166,6 +173,7 @@ const FirstView = () => {
                         className="w-[420px] h-auto object-contain opacity-60 drop-shadow-lg" 
                         loading="eager"
                         decoding="async"
+                        fetchPriority="high"
                       />
                     </div>
                   ))}
@@ -177,22 +185,24 @@ const FirstView = () => {
         </div>
 
         {/* コンテンツレイヤー */}
+        {/* ■ 修正: 静的なテキスト要素から hardware-accelerated クラスを削除 (不要なメモリ消費を防ぐ) */}
         <div className="relative z-10 w-full h-full flex flex-col items-center justify-start pt-10 px-4 pointer-events-none">
           
-          <h1 className="text-[22px] md:text-[22px] font-bold text-gray-900 text-center leading-[1.6] md:leading-[1.8] whitespace-pre-wrap pointer-events-auto hardware-accelerated">
+          <h1 className="text-[22px] md:text-[22px] font-bold text-gray-900 text-center leading-[1.6] md:leading-[1.8] whitespace-pre-wrap pointer-events-auto">
             <StaticText text={titleText} />
           </h1>
 
-          <div className="w-[300px] md:w-[350px] flex items-center justify-center pointer-events-auto my-4 md:my-0 hardware-accelerated">
+          <div className="w-[300px] md:w-[350px] flex items-center justify-center pointer-events-auto my-4 md:my-0">
             <img 
               src={logoImage} 
               alt="MY BRANDISH" 
               className="w-full h-auto object-contain"
               loading="eager" 
+              fetchPriority="high"
             />
           </div>
 
-          <p className="text-[18px] md:text-[16px] text-gray-600 text-center font-medium pointer-events-auto hardware-accelerated">
+          <p className="text-[18px] md:text-[16px] text-gray-600 text-center font-medium pointer-events-auto">
             <StaticText text={subText} />
           </p>
 
@@ -202,7 +212,6 @@ const FirstView = () => {
       {/* ■ Headerエリア */}
       <header className="sticky top-0 z-50 h-[10dvh] min-h-[60px] w-full flex items-center pl-2 pr-4 md:px-8 transition-all duration-300 bg-white/60 backdrop-blur-sm">
         
-        {/* 左側: ロゴエリア */}
         <div className="absolute left-2 md:left-8 flex items-center justify-start pointer-events-none">
           {isSticky && (
             <img 
@@ -213,11 +222,6 @@ const FirstView = () => {
           )}
         </div>
 
-        {/* 右側: ナビゲーションメニュー */}
-        {/* ■ 修正:
-           - text-[9.5px] (SP: 11px - 1.5px)
-           - gap-4 (SP: 24px / 1.5 = 16px)
-        */}
         <div className="ml-auto flex items-center gap-4 md:gap-[50px] text-[9.5px] md:text-[17px] font-bold text-gray-800 z-10 cursor-pointer">
           <button onClick={() => scrollToSection('statement')} className="hover:text-amber-500 transition-colors">
             MyBrandishとは？
@@ -227,10 +231,6 @@ const FirstView = () => {
           </button>
           
           <button onClick={() => scrollToSection('contact')}>
-            {/* ■ 修正:
-               - px-[22px] (SP: 24px - 2px)
-               - md:px-6 (PC: 維持)
-            */}
             <span className="inline-block bg-[#FFD014] text-black rounded-full py-2 px-[22px] md:px-6 transition hover:bg-[#e6bb12]">
               お問い合わせ
             </span>
