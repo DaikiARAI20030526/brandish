@@ -3,6 +3,7 @@ import React from 'react';
 const CompanyInfo = () => {
   const companyData = [
     { label: '名称', value: '株式会社YOKOYAMA' },
+    { label: '公式web URL', value: 'https://yokoyama-foods.com/' }, // ■ 追加箇所
     { 
       label: '所在地', 
       value: (
