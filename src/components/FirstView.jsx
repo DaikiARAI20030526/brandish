@@ -21,8 +21,15 @@ const IMAGES = [
 // レーン生成ロジック
 const generateLaneData = (laneCount, repeatCount = 4) => {
   return Array.from({ length: laneCount }).map((_, laneIndex) => {
-    const offset = laneIndex % IMAGES.length;
-    const rotatedImages = [...IMAGES.slice(offset), ...IMAGES.slice(0, offset)];
+    // ■ 修正: 2列目（奇数レーン）の場合、画像の並び順を逆にする
+    let currentImages = [...IMAGES];
+    if (laneIndex % 2 !== 0) {
+      currentImages.reverse();
+    }
+
+    // オフセット計算（レーンごとに開始画像をずらす）
+    const offset = laneIndex % currentImages.length;
+    const rotatedImages = [...currentImages.slice(offset), ...currentImages.slice(0, offset)];
     
     let items = [];
     for (let i = 0; i < repeatCount; i++) {
@@ -45,7 +52,7 @@ const FirstView = () => {
   const subText = "Produce　by　YOKOYAMA";
   const [isSticky, setIsSticky] = useState(false);
 
-  // 画像プリロード（ブラウザのキャッシュに強制的に入れる）
+  // 画像プリロード
   useEffect(() => {
     if (typeof window !== 'undefined' && window.innerWidth <= 768) {
       IMAGES.forEach((src) => {
@@ -116,7 +123,6 @@ const FirstView = () => {
         /* アニメーションの最適化 */
         .animate-flow-unified {
           animation: flowDown 62s linear infinite;
-          /* ちらつき防止 */
           transform-style: preserve-3d;
           -webkit-transform-style: preserve-3d;
         }
@@ -126,7 +132,6 @@ const FirstView = () => {
       <section className="relative h-[90dvh] w-full bg-white overflow-hidden">
 
         {/* 背景アニメーションレイヤー */}
-        {/* ■ 修正: contain: 'strict' を削除。ブラウザの描画省略を防ぐため。 */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
           
           {/* === SP用レイアウト === */}
@@ -138,7 +143,11 @@ const FirstView = () => {
               <div key={lane.id} className="flex-1 px-1 relative h-full">
                 <div 
                   className="animate-flow-unified flex flex-col items-center w-full force-gpu"
-                  style={{ animationDelay: `${lane.id * -15}s` }}
+                  style={{ 
+                    animationDelay: `${lane.id * -15}s`,
+                    // ■ 修正: SP版のアニメーション速度を 20s に短縮（高速化）
+                    animationDuration: '20s'
+                  }}
                 >
                   {lane.items.map((src, idx) => (
                     <div 
@@ -146,10 +155,6 @@ const FirstView = () => {
                       className="w-full flex justify-center flex-shrink-0"
                       style={{ paddingBottom: '60px' }}
                     >
-                      {/* ■ 修正:
-                         - decoding="async": メインスレッドをブロックさせず、パラパラと即表示させる
-                         - force-gpuクラス: 画像単体にもGPU使用を強制
-                      */}
                       <img 
                         src={src} 
                         alt="" 
@@ -236,7 +241,6 @@ const FirstView = () => {
           )}
         </div>
 
-        {/* SP版の調整: テキストサイズ縮小、ボタン内padding削減、gap削減 */}
         <div className="ml-auto flex items-center gap-4 md:gap-[50px] text-[9.5px] md:text-[17px] font-bold text-gray-800 z-10 cursor-pointer">
           <button onClick={() => scrollToSection('statement')} className="hover:text-amber-500 transition-colors">
             MyBrandishとは？
