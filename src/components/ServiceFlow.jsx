@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import mainImage from '../assets/YK_図.jpg';
-// ■ 修正点: SP用の画像をインポート
 import mainImageSP from '../assets/YK_SP.jpg';
 import step1Image from '../assets/YK_図1.jpg';
 import step2Image from '../assets/YK_図2.jpg';
@@ -49,20 +48,18 @@ const ServiceFlow = () => {
     <section id="service" className="pb-20 pt-0 px-4 bg-white">
       <div className="max-w-[1400px] mx-auto">
         
-        <h2 className="text-[24px] font-bold text-left md:pl-[7rem] mb-4 max-[530px]:text-[18px]">
+        {/* PC: 24px -> 31px に拡大 */}
+        <h2 className="text-[31px] font-bold text-left md:pl-[7rem] mb-4 max-[530px]:text-[18px]">
           サービス内容について
         </h2>
         
         <div className="w-full mb-10">
-          {/* ■ 修正点: 画像の切り替え処理 */}
           <div className="mb-5">
-            {/* PC版 (530px超で表示) */}
             <img 
               src={mainImage} 
               alt="サービスフロー全体図(PC)" 
               className="w-full h-auto block max-[530px]:hidden" 
             />
-            {/* SP版 (530px以下で表示) */}
             <img 
               src={mainImageSP} 
               alt="サービスフロー全体図(SP)" 
@@ -70,13 +67,16 @@ const ServiceFlow = () => {
             />
           </div>
 
-          <p className="text-[18px] leading-relaxed text-left md:pl-[7rem] md:pr-6 pb-4 border-b-[0.3px] border-[#D9D9D9] break-all
+          {/* PC: 18px -> 23px に拡大 */}
+          {/* Border: #D9D9D9 -> #FFD014 に変更 */}
+          <p className="text-[23px] leading-relaxed text-left md:pl-[7rem] md:pr-6 pb-4 border-b-[0.3px] border-[#FFD014] break-all
             max-[530px]:text-[14px] max-[530px]:leading-[27px]">
             企画立案から、商品発売まで全てお任せください。売れる商品企画＆施策からブランド公開まで、最短6ヶ月。私たちは、あなたの情熱とスピード感に寄り添い、複雑なプロセスをシンプルにエスコートします。全体のスケジュールは、私たちが責任を持って進行管理します。
           </p>
         </div>
 
-        <div className="text-[14px] font-bold text-left md:pl-[7rem] mb-6
+        {/* PC: 14px -> 18px に拡大 */}
+        <div className="text-[18px] font-bold text-left md:pl-[7rem] mb-6
           max-[530px]:text-[14px] max-[530px]:leading-[27px]">
           サービスフロー
         </div>
@@ -86,14 +86,16 @@ const ServiceFlow = () => {
             const isOpen = openIndex === idx;
 
             return (
-              <div key={idx} className="w-full border-b-[0.3px] border-[#D9D9D9]">
+              // Border: #D9D9D9 -> #FFD014 に変更
+              <div key={idx} className="w-full border-b-[0.3px] border-[#FFD014]">
                 
                 <div 
                   onClick={() => toggleAccordion(idx)}
-                  className="group w-full py-4 flex justify-between items-baseline cursor-pointer transition-colors duration-0"
+                  className="group w-full py-4 flex justify-between items-center cursor-pointer transition-colors duration-0"
                 >
+                  {/* Step PC: 14px -> 18px に拡大 */}
                   <div className={`
-                    text-[14px] font-bold transition-colors duration-0
+                    text-[18px] font-bold transition-colors duration-0
                     md:pl-[7rem] 
                     max-[530px]:text-[14px] max-[530px]:leading-[27px]
                     ${isOpen ? 'text-black' : 'text-[#D9D9D9] group-hover:text-black'}
@@ -101,8 +103,30 @@ const ServiceFlow = () => {
                     {service.step}
                   </div>
 
+                  {/* ■ 追加: 開閉を表す矢印アイコン */}
+                  <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      width="24" 
+                      height="24" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
+                      className={`
+                        w-6 h-6 max-[530px]:w-4 max-[530px]:h-4
+                        ${isOpen ? 'text-black' : 'text-[#D9D9D9] group-hover:text-black'}
+                      `}
+                    >
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
+
+                  {/* Title PC: 14px -> 18px に拡大 */}
                   <div className={`
-                    text-[14px] font-bold transition-colors duration-0
+                    text-[18px] font-bold transition-colors duration-0
                     text-right md:pr-6
                     max-[530px]:text-[14px] max-[530px]:leading-[27px]
                     ${isOpen ? 'text-black' : 'text-[#D9D9D9] group-hover:text-black'}
@@ -122,12 +146,14 @@ const ServiceFlow = () => {
                     {/* テキストエリア */}
                     <div className="w-full md:w-[68%] flex flex-col justify-center md:pl-[32%] md:pr-16 px-0">
                       
-                      <p className="text-[16px] leading-[31px] text-gray-700 text-justify mb-6 md:mb-8
+                      {/* Description PC: 16px -> 21px, leading-31px -> leading-[40px] に拡大 */}
+                      <p className="text-[21px] leading-[40px] text-gray-700 text-justify mb-6 md:mb-8
                         max-[530px]:text-[14px] max-[530px]:leading-[27px]">
                         {service.description}
                       </p>
 
-                      <ul className="text-[16px] leading-[31px] space-y-2 list-none text-gray-700 text-left
+                      {/* List PC: 16px -> 21px, leading-31px -> leading-[40px] に拡大 */}
+                      <ul className="text-[21px] leading-[40px] space-y-2 list-none text-gray-700 text-left
                         max-[530px]:text-[14px] max-[530px]:leading-[27px]">
                         {service.items.map((item, i) => (
                           <li key={i}>・ {item}</li>
