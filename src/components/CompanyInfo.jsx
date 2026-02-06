@@ -5,7 +5,6 @@ const CompanyInfo = () => {
     { label: '名称', value: '株式会社YOKOYAMA' },
     { 
       label: '所在地', 
-      // ■ 修正: 新宿区と西早稲田の間で改行(<br />)を追加
       value: (
         <>
           〒169-0051 東京都新宿区<br />
@@ -18,17 +17,27 @@ const CompanyInfo = () => {
     { label: '資本金', value: '30,000,000円' },
     { 
       label: '主要取引先', 
-      // ■ 修正: 単語ごとに inline-block を適用し、単語の途中で改行されないように設定
+      // ■ 修正: whitespace-nowrapを追加し、単語途中での改行を完全に禁止
       value: (
         <>
-          <span className="inline-block">三菱食品株式会社/</span>
-          <span className="inline-block">三井物産株式会社/</span>
-          <span className="inline-block">国分グループ本社株式会社/</span>
-          <span className="inline-block">加藤産業株式会社</span>
+          <span className="inline-block whitespace-nowrap">三菱食品株式会社/</span>
+          <span className="inline-block whitespace-nowrap">三井物産株式会社/</span>
+          <span className="inline-block whitespace-nowrap">国分グループ本社株式会社/</span>
+          <span className="inline-block whitespace-nowrap">加藤産業株式会社</span>
         </>
       )
     },
-    { label: '取引先銀行', value: 'みずほ銀行、西武信用金庫、GMOあおぞらネット銀行' }
+    { 
+      label: '取引先銀行', 
+      // ■ 修正: 取引先銀行も同様に span + whitespace-nowrap で分割
+      value: (
+        <>
+          <span className="inline-block whitespace-nowrap">みずほ銀行、</span>
+          <span className="inline-block whitespace-nowrap">西武信用金庫、</span>
+          <span className="inline-block whitespace-nowrap">GMOあおぞらネット銀行</span>
+        </>
+      ) 
+    }
   ];
 
   return (
@@ -50,7 +59,6 @@ const CompanyInfo = () => {
                 {item.label}
               </div>
               
-              {/* 値部分: JSX(改行やinline-block)もレンダリングできるようにそのまま表示 */}
               <div className="flex-1 text-right text-[17px] leading-[32px]">
                 {item.value}
               </div>
