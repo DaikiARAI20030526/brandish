@@ -192,7 +192,7 @@ const FirstView = () => {
               <div key={lane.id} className="flex-1 px-2 relative h-full">
                 <div 
                   className="animate-flow-unified flex flex-col items-center w-full force-gpu"
-                  style={{ animationDelay: `${lane.id * -10}s` }}
+                  style={{ animationDelay: `${lane.id * -20}s` }}
                 >
                   {lane.items.map((src, idx) => (
                     <div 
