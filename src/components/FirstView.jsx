@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-// 【重要】
-// 読み込み速度を劇的に改善するには、以下の画像ファイル自体を
-// 「横幅300px〜400px程度」かつ「WebP形式」等に軽量化することを強く推奨します。
+// 【最重要】
+// 根本的な「重さ」を解決するには、コードだけでなく画像のファイルサイズ削減が必須です。
+// 画像を「幅400px程度のWebP形式（1枚50KB以下）」に変換して使用することを強く推奨します。
 import logoImage from '../assets/YK_ロゴ仮.png';
 import logoheaderImage from '../assets/YK_ロゴ仮2.png';
 import liquidBottleImage from '../assets/YK_DS.png';
@@ -36,7 +36,7 @@ const generateLaneData = (laneCount, repeatCount = 4) => {
   });
 };
 
-// SP版: ループ数を最小限(2)にし、DOM数を削減
+// SP版: データ量を極限まで減らす（2セットあれば画面は埋まるはずです）
 const DATA_SP = generateLaneData(2, 2); 
 const DATA_PC = generateLaneData(6, 4);
 
@@ -45,14 +45,15 @@ const FirstView = () => {
   const subText = "Produce　by　YOKOYAMA";
   const [isSticky, setIsSticky] = useState(false);
 
-  // 画像プリロード（コンポーネントマウント時に即座にブラウザキャッシュに入れる）
+  // 画像プリロード（ブラウザのキャッシュに強制的に入れる）
   useEffect(() => {
-    // SP版の画像のみを先行して強制読み込み
-    if (window.innerWidth <= 768) {
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
       IMAGES.forEach((src) => {
-        const img = new Image();
-        img.src = src;
-        img.decode().catch(() => {}); // エラー無視でデコード試行
+        const link = document.createElement('link');
+        link.rel = 'preload';
+        link.as = 'image';
+        link.href = src;
+        document.head.appendChild(link);
       });
     }
 
@@ -90,11 +91,12 @@ const FirstView = () => {
   return (
     <>
       <style>{`
-        /* GPU最適化: 3D変形を強制してレイヤーを分離 */
-        .gpu-layer {
+        /* GPUレイヤーを強制的に作成し、描画を安定させる */
+        .force-gpu {
           transform: translate3d(0, 0, 0);
+          -webkit-transform: translate3d(0, 0, 0);
           backface-visibility: hidden;
-          perspective: 1000px;
+          -webkit-backface-visibility: hidden;
           will-change: transform;
         }
 
@@ -111,8 +113,12 @@ const FirstView = () => {
           100% { transform: translateY(0%); }
         }
         
+        /* アニメーションの最適化 */
         .animate-flow-unified {
           animation: flowDown 62s linear infinite;
+          /* ちらつき防止 */
+          transform-style: preserve-3d;
+          -webkit-transform-style: preserve-3d;
         }
       `}</style>
 
@@ -120,21 +126,18 @@ const FirstView = () => {
       <section className="relative h-[90dvh] w-full bg-white overflow-hidden">
 
         {/* 背景アニメーションレイヤー */}
-        {/* contain: strict で描画計算をこのエリア内に閉じ込める */}
-        <div 
-          className="absolute inset-0 overflow-hidden pointer-events-none select-none"
-          style={{ contain: 'strict' }} 
-        >
+        {/* ■ 修正: contain: 'strict' を削除。ブラウザの描画省略を防ぐため。 */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
           
           {/* === SP用レイアウト === */}
           <div 
-            className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] flex md:hidden justify-center gap-0 gpu-layer"
+            className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] flex md:hidden justify-center gap-0 force-gpu"
             style={{ transform: `translate(-50%, -50%) rotate(25deg)` }}
           >
             {DATA_SP.map((lane) => (
               <div key={lane.id} className="flex-1 px-1 relative h-full">
                 <div 
-                  className="animate-flow-unified flex flex-col items-center w-full gpu-layer"
+                  className="animate-flow-unified flex flex-col items-center w-full force-gpu"
                   style={{ animationDelay: `${lane.id * -15}s` }}
                 >
                   {lane.items.map((src, idx) => (
@@ -143,17 +146,16 @@ const FirstView = () => {
                       className="w-full flex justify-center flex-shrink-0"
                       style={{ paddingBottom: '60px' }}
                     >
-                      {/* ■ SP最適化設定:
-                         - decoding="sync": 画像が小さい前提で、表示タイミングを合わせる
-                         - loading="eager": 遅延読み込みを無効化
-                         - fetchPriority="high": 最優先でネットワークリクエスト
+                      {/* ■ 修正:
+                         - decoding="async": メインスレッドをブロックさせず、パラパラと即表示させる
+                         - force-gpuクラス: 画像単体にもGPU使用を強制
                       */}
                       <img 
                         src={src} 
                         alt="" 
-                        className="w-[280px] h-auto object-contain opacity-60 drop-shadow-lg" 
+                        className="w-[280px] h-auto object-contain opacity-60 drop-shadow-lg force-gpu" 
                         loading="eager"
-                        decoding="sync"
+                        decoding="async"
                         fetchPriority="high"
                       />
                     </div>
@@ -165,13 +167,13 @@ const FirstView = () => {
 
           {/* === PC用レイアウト === */}
           <div 
-            className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] hidden md:flex justify-center gap-0 gpu-layer"
+            className="absolute top-1/2 left-1/2 w-[200vw] h-[200vh] hidden md:flex justify-center gap-0 force-gpu"
             style={{ transform: `translate(-50%, -50%) rotate(45deg)` }}
           >
             {DATA_PC.map((lane) => (
               <div key={lane.id} className="flex-1 px-2 relative h-full">
                 <div 
-                  className="animate-flow-unified flex flex-col items-center w-full gpu-layer"
+                  className="animate-flow-unified flex flex-col items-center w-full force-gpu"
                   style={{ animationDelay: `${lane.id * -10}s` }}
                 >
                   {lane.items.map((src, idx) => (
@@ -183,7 +185,7 @@ const FirstView = () => {
                       <img 
                         src={src} 
                         alt="" 
-                        className="w-[420px] h-auto object-contain opacity-60 drop-shadow-lg" 
+                        className="w-[420px] h-auto object-contain opacity-60 drop-shadow-lg force-gpu" 
                         loading="eager"
                         decoding="async"
                         fetchPriority="high"
@@ -234,6 +236,7 @@ const FirstView = () => {
           )}
         </div>
 
+        {/* SP版の調整: テキストサイズ縮小、ボタン内padding削減、gap削減 */}
         <div className="ml-auto flex items-center gap-4 md:gap-[50px] text-[9.5px] md:text-[17px] font-bold text-gray-800 z-10 cursor-pointer">
           <button onClick={() => scrollToSection('statement')} className="hover:text-amber-500 transition-colors">
             MyBrandishとは？
