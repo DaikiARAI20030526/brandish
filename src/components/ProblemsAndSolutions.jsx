@@ -120,12 +120,10 @@ const ProblemsAndSolutions = () => {
         `}>
           <h2 className={`font-semibold transition-all duration-700 ${isMobile ? 'text-[18px]' : 'text-[24px] h-[40px]'}`}>
             {isSolutionPhase ? (
-               // ■ 修正: text-black, py-[9px], px-[25px]
                <span className="inline-block bg-[#FFD014] text-black rounded-full py-[9px] px-[25px] animate-fade-in">
                  YOKOYAMAにお任せください
                </span>
             ) : (
-               // ■ 修正: 同上
                <span className="inline-block bg-[#FFD014] text-black rounded-full py-[9px] px-[25px]">
                  こんなお悩みありませんか？
                </span>
@@ -152,7 +150,6 @@ const ProblemsAndSolutions = () => {
                 `}
                 style={{
                   ...(isMobile ? { minHeight: '120px' } : {}),
-                  // ■ 修正: ボーダー色を #FFD014 に変更
                   borderTop: '0.3px solid #FFD014',
                   borderBottom: '0.3px solid #FFD014'
                 }}
@@ -236,7 +233,8 @@ const ProblemsAndSolutions = () => {
                       className={`
                         transition-all duration-75 px-4 md:px-12
                         ${isMobile 
-                          ? 'col-start-1 row-start-1 flex justify-between items-center relative z-20' 
+                          // ■ 修正1: gap-4を追加して重なりを防止
+                          ? 'col-start-1 row-start-1 flex justify-between items-center relative z-20 gap-4' 
                           : 'absolute left-0 w-full text-left'
                         }
                       `}
@@ -246,7 +244,8 @@ const ProblemsAndSolutions = () => {
                         color: '#111827'
                       }}
                     >
-                      <div className={`${isMobile ? 'flex-1 pr-4 py-8' : 'w-full'}`}>
+                      {/* ■ 修正1に伴い: pr-4を削除（gapで余白を確保するため） */}
+                      <div className={`${isMobile ? 'flex-1 py-8' : 'w-full'}`}>
                         <p className={`font-semibold whitespace-pre-wrap ${isMobile ? 'text-[18px] leading-[35px]' : 'text-[24px] leading-[47px]'}`}>
                           {item.solution}
                         </p>
@@ -254,17 +253,26 @@ const ProblemsAndSolutions = () => {
 
                       {isMobile && (
                         <div className="flex-none">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                            <path d="M5 13l4 4L19 7" /> 
-                          </svg>
+                          {/* ■ 修正2: #FFD014の円形背景を追加 (SP版) */}
+                          <div className="flex items-center justify-center w-12 h-12 bg-[#FFD014] rounded-full">
+                            {/* SVGサイズを調整 (h-12 w-12 -> h-8 w-8) */}
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                              <path d="M5 13l4 4L19 7" /> 
+                            </svg>
+                          </div>
                         </div>
                       )}
 
                       {!isMobile && (
                         <div className="absolute right-12 top-1/2 transform -translate-y-1/2">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                            <path d="M5 13l4 4L19 7" /> 
-                          </svg>
+                          {/* ■ 修正2: #FFD014の円形背景を追加 (PC版) */}
+                          {/* 円コンテナを少し大きめ(w-24 h-24)にして余白感を持たせる */}
+                          <div className="flex items-center justify-center w-24 h-24 bg-[#FFD014] rounded-full">
+                            {/* SVGサイズを調整 (h-20 w-20 -> h-14 w-14) */}
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                              <path d="M5 13l4 4L19 7" /> 
+                            </svg>
+                          </div>
                         </div>
                       )}
                     </div>
