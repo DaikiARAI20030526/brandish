@@ -1,9 +1,7 @@
 import React from 'react';
 
 const Contact = () => {
-  // ■ 修正: テキストサイズをレスポンシブ対応に変更
-  // SP版: text-sm (14px)
-  // PC版: text-[17px]
+  // テキストサイズ設定 (SP: 14px / PC: 17px)
   const labelStyle = "block text-sm md:text-[17px] font-medium mb-2";
   const inputStyle = "w-full px-4 py-3 border border-[#FFD014] rounded-lg text-sm md:text-[17px] focus:ring-2 focus:ring-[#FFD014] focus:border-transparent outline-none";
   const checkboxLabelStyle = "text-sm md:text-[17px]";
@@ -15,7 +13,6 @@ const Contact = () => {
         type="checkbox" 
         className="peer appearance-none w-5 h-5 border border-[#FFD014] rounded bg-white checked:bg-[#FFD014] cursor-pointer transition-colors"
       />
-      {/* チェック時に表示される白いチェックマーク */}
       <svg 
         className="absolute w-3.5 h-3.5 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity"
         xmlns="http://www.w3.org/2000/svg" 
@@ -36,7 +33,8 @@ const Contact = () => {
       
       <div className="px-4 md:pl-32 md:pr-8">
         
-        <h2 className="text-left mb-12">
+        {/* ■ 修正: マージンをレスポンシブ対応に変更 (mb-12 -> mb-8 md:mb-12) */}
+        <h2 className="text-left mb-8 md:mb-12">
           <span className="inline-block bg-[#FFD014] text-black rounded-full py-[9px] px-[25px] text-[24px] font-bold max-[530px]:text-[18px]">
             お問い合わせ
           </span>
@@ -53,7 +51,6 @@ const Contact = () => {
 
           <div className="flex gap-4 flex-wrap">
             <label className="flex items-center cursor-pointer hover:opacity-80 transition-opacity">
-              {/* ■ 修正: 枠線を黄色にしたカスタムチェックボックスを使用 */}
               <CustomCheckbox />
               <span className={checkboxLabelStyle}>話が聞きたい</span>
             </label>
