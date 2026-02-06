@@ -5,13 +5,13 @@ const CompanyInfo = () => {
     { label: '名称', value: '株式会社YOKOYAMA' },
     { 
       label: '公式web URL', 
-      // ■ 修正: クリック可能なリンクに変更
       value: (
         <a 
           href="https://yokoyama-foods.com/" 
           target="_blank" 
           rel="noopener noreferrer"
-          className="text-blue-600 hover:underline break-all"
+          // ■ 修正箇所: text-blue-600 から text-[#FFD014] に変更
+          className="text-[#FFD014] hover:underline break-all"
         >
           https://yokoyama-foods.com/
         </a>
