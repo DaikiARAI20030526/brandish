@@ -32,8 +32,8 @@ const CompanyInfo = () => {
       // ■ 修正: 取引先銀行も同様に span + whitespace-nowrap で分割
       value: (
         <>
-          <span className="inline-block whitespace-nowrap">みずほ銀行、</span>
-          <span className="inline-block whitespace-nowrap">西武信用金庫、</span>
+          <span className="inline-block whitespace-nowrap">みずほ銀行/</span>
+          <span className="inline-block whitespace-nowrap">西武信用金庫/</span>
           <span className="inline-block whitespace-nowrap">GMOあおぞらネット銀行</span>
         </>
       ) 
