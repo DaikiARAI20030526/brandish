@@ -36,6 +36,7 @@ const ProblemsAndSolutions = () => {
   useEffect(() => {
     const handleScroll = () => {
       // --- SP (530px以下) のロジック ---
+      // 前回の設定(start:0.5, end:0.27)を維持
       if (isMobile) {
         const newProgresses = items.map((_, i) => {
           const el = itemRefs.current[i];
@@ -44,9 +45,6 @@ const ProblemsAndSolutions = () => {
           const rect = el.getBoundingClientRect();
           const windowHeight = window.innerHeight;
           
-          // ■ 修正点(SP): 変化に必要な距離を短くして、約1.3倍速く切り替わるように調整
-          // start(0.5) - end(0.2) = 0.3 の距離だったものを
-          // start(0.5) - end(0.27) = 0.23 の距離に短縮 (0.3 / 1.3 ≒ 0.23)
           const start = windowHeight * 0.50;
           const end = windowHeight * 0.27; 
           
@@ -105,8 +103,8 @@ const ProblemsAndSolutions = () => {
     <section 
       ref={sectionRef} 
       className="relative" 
-      // ■ 修正点(PC): 全体の高さを600vhから460vhに短縮 (約1.3倍速く完了させるため)
-      style={{ height: isMobile ? 'auto' : '460vh' }}
+      // ■ 修正点(PC): 400vhに変更 (SPはautoのまま)
+      style={{ height: isMobile ? 'auto' : '400vh' }}
     >
       
       <div className={`
