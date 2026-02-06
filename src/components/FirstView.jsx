@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-// 【最重要】
-// 根本的な「重さ」を解決するには、コードだけでなく画像のファイルサイズ削減が必須です。
-// 画像を「幅400px程度のWebP形式（1枚50KB以下）」に変換して使用することを強く推奨します。
+// PC用画像 (従来通り)
 import logoImage from '../assets/YK_ロゴ仮.png';
 import logoheaderImage from '../assets/YK_ロゴ仮2.png';
 import liquidBottleImage from '../assets/YK_DS.png';
@@ -10,19 +8,35 @@ import cupNoodleImage from '../assets/YK_KM.png';
 import jarImage from '../assets/YK_BN.png';
 import chipsImage from '../assets/YK_PC.png';
 
-// ■ 高速化設定
-const IMAGES = [
+// ■ 修正: SP用画像のインポート (ファイル名の末尾に_SPを追加)
+import liquidBottleImageSP from '../assets/YK_DS_SP.png';
+import cupNoodleImageSP from '../assets/YK_KM_SP.png';
+import jarImageSP from '../assets/YK_BN_SP.png';
+import chipsImageSP from '../assets/YK_PC_SP.png';
+
+// ■ 修正: 画像リストをPC用とSP用に分離
+const IMAGES_PC = [
   liquidBottleImage,
   cupNoodleImage,
   jarImage,
   chipsImage
 ];
 
+const IMAGES_SP = [
+  liquidBottleImageSP,
+  cupNoodleImageSP,
+  jarImageSP,
+  chipsImageSP
+];
+
 // レーン生成ロジック
-const generateLaneData = (laneCount, repeatCount = 4) => {
+// ■ 修正: 第2引数で画像リスト(sourceImages)を受け取るように変更
+const generateLaneData = (laneCount, sourceImages, repeatCount = 4) => {
   return Array.from({ length: laneCount }).map((_, laneIndex) => {
-    // ■ 修正: 2列目（奇数レーン）の場合、画像の並び順を逆にする
-    let currentImages = [...IMAGES];
+    // 画像リストのコピーを作成
+    let currentImages = [...sourceImages];
+    
+    // 2列目（奇数レーン）の場合、画像の並び順を逆にする (1-2-3-4 -> 4-3-2-1)
     if (laneIndex % 2 !== 0) {
       currentImages.reverse();
     }
@@ -43,9 +57,12 @@ const generateLaneData = (laneCount, repeatCount = 4) => {
   });
 };
 
-// SP版: データ量を極限まで減らす（2セットあれば画面は埋まるはずです）
-const DATA_SP = generateLaneData(2, 2); 
-const DATA_PC = generateLaneData(6, 4);
+// ■ 修正: SP版データ生成に IMAGES_SP を使用
+// (ループ数2回、アニメーション高速化のためDOM削減)
+const DATA_SP = generateLaneData(2, IMAGES_SP, 2); 
+
+// PC版データ生成に IMAGES_PC を使用
+const DATA_PC = generateLaneData(6, IMAGES_PC, 4);
 
 const FirstView = () => {
   const titleText = "あなたの\"うまい\"が、全国の食卓へ\n食の挑戦を、仕組みで支える";
@@ -55,12 +72,19 @@ const FirstView = () => {
   // 画像プリロード
   useEffect(() => {
     if (typeof window !== 'undefined' && window.innerWidth <= 768) {
-      IMAGES.forEach((src) => {
+      // ■ 修正: SPの場合は IMAGES_SP をプリロード
+      IMAGES_SP.forEach((src) => {
         const link = document.createElement('link');
         link.rel = 'preload';
         link.as = 'image';
         link.href = src;
         document.head.appendChild(link);
+      });
+    } else {
+      // PCの場合は IMAGES_PC をプリロード (必要であれば)
+      IMAGES_PC.forEach((src) => {
+        const img = new Image();
+        img.src = src;
       });
     }
 
@@ -145,7 +169,7 @@ const FirstView = () => {
                   className="animate-flow-unified flex flex-col items-center w-full force-gpu"
                   style={{ 
                     animationDelay: `${lane.id * -15}s`,
-                    // ■ 修正: SP版のアニメーション速度を 20s に短縮（高速化）
+                    // SP版のアニメーション速度: 20s (高速化)
                     animationDuration: '20s'
                   }}
                 >
