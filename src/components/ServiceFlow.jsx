@@ -48,8 +48,8 @@ const ServiceFlow = () => {
     <section id="service" className="pb-20 pt-0 px-4 bg-white">
       <div className="max-w-[1400px] mx-auto">
         
-        {/* ■ 修正: 配置指定はh2に残し、装飾とフォント指定をspanに適用 */}
-        <h2 className="text-left md:pl-[7rem] mb-4">
+        {/* ■ 修正: mb-4 md:mb-0 に変更 (PC版のみ下マージン削除) */}
+        <h2 className="text-left md:pl-[7rem] mb-4 md:mb-0">
           <span className="inline-block bg-[#FFD014] text-black rounded-full py-[9px] px-[25px] text-[26px] font-bold max-[530px]:text-[18px]">
             サービス内容について
           </span>
@@ -75,7 +75,6 @@ const ServiceFlow = () => {
           </p>
         </div>
 
-        {/* ■ 修正: 配置指定はdivに残し、装飾とフォント指定をspanに適用 */}
         <div className="text-left md:pl-[7rem] mb-6">
           <span className="inline-block bg-[#FFD014] text-black rounded-full py-[9px] px-[25px] text-[15px] font-bold max-[530px]:text-[14px] max-[530px]:leading-[27px]">
             サービスフロー
@@ -96,7 +95,7 @@ const ServiceFlow = () => {
                   {/* 左側に矢印とSTEPをグループ化して配置 */}
                   <div className="flex items-center gap-[10px] md:pl-[7rem]">
                     
-                    {/* 円とアイコンのサイズは前回の修正(縮小版)を維持 */}
+                    {/* 円とアイコンのサイズ */}
                     <div 
                       className={`
                         flex items-center justify-center
