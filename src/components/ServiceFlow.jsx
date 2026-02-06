@@ -48,8 +48,11 @@ const ServiceFlow = () => {
     <section id="service" className="pb-20 pt-0 px-4 bg-white">
       <div className="max-w-[1400px] mx-auto">
         
-        <h2 className="text-[26px] font-bold text-left md:pl-[7rem] mb-4 max-[530px]:text-[18px]">
-          サービス内容について
+        {/* ■ 修正: 配置指定はh2に残し、装飾とフォント指定をspanに適用 */}
+        <h2 className="text-left md:pl-[7rem] mb-4">
+          <span className="inline-block bg-[#FFD014] text-black rounded-full py-[9px] px-[25px] text-[26px] font-bold max-[530px]:text-[18px]">
+            サービス内容について
+          </span>
         </h2>
         
         <div className="w-full mb-10">
@@ -72,9 +75,11 @@ const ServiceFlow = () => {
           </p>
         </div>
 
-        <div className="text-[15px] font-bold text-left md:pl-[7rem] mb-6
-          max-[530px]:text-[14px] max-[530px]:leading-[27px]">
-          サービスフロー
+        {/* ■ 修正: 配置指定はdivに残し、装飾とフォント指定をspanに適用 */}
+        <div className="text-left md:pl-[7rem] mb-6">
+          <span className="inline-block bg-[#FFD014] text-black rounded-full py-[9px] px-[25px] text-[15px] font-bold max-[530px]:text-[14px] max-[530px]:leading-[27px]">
+            サービスフロー
+          </span>
         </div>
 
         <div className="w-full">
@@ -91,11 +96,11 @@ const ServiceFlow = () => {
                   {/* 左側に矢印とSTEPをグループ化して配置 */}
                   <div className="flex items-center gap-[10px] md:pl-[7rem]">
                     
-                    {/* ■ 修正: 円とアイコンのサイズを約半分に縮小 */}
+                    {/* 円とアイコンのサイズは前回の修正(縮小版)を維持 */}
                     <div 
                       className={`
                         flex items-center justify-center
-                        w-5 h-5 md:w-6 md:h-6       /* 修正: w-8/10 -> w-5/6 */
+                        w-5 h-5 md:w-6 md:h-6
                         bg-[#FFD014] rounded-full
                         transition-transform duration-300
                         ${isOpen ? 'rotate-180' : 'rotate-0'}
@@ -103,12 +108,11 @@ const ServiceFlow = () => {
                     >
                       <svg 
                         xmlns="http://www.w3.org/2000/svg" 
-                        // 修正: w-5/6 -> w-3/4 (小さく)
                         className="w-3 h-3 md:w-4 md:h-4 text-black"
                         viewBox="0 0 24 24" 
                         fill="none" 
                         stroke="currentColor" 
-                        strokeWidth="3" /* 修正: 小さくなった分、視認性のため少し太く(2->3) */
+                        strokeWidth="3"
                         strokeLinecap="round" 
                         strokeLinejoin="round"
                       >
