@@ -51,7 +51,7 @@ const FirstView = () => {
       });
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll, { passive: true });
   }, []);
 
   const scrollToSection = (id) => {
@@ -198,9 +198,11 @@ const FirstView = () => {
       </section>
 
       {/* ■ Headerエリア */}
-      <header className="sticky top-0 z-50 h-[10dvh] min-h-[60px] w-full flex items-center pl-2 pr-4 md:px-8 transition-all duration-300 bg-white/60 backdrop-blur-sm md:bg-transparent md:backdrop-blur-none">
+      {/* 修正: PC版でも背景ボカシを有効化 (md:bg-transparent等を削除) */}
+      <header className="sticky top-0 z-50 h-[10dvh] min-h-[60px] w-full flex items-center pl-2 pr-4 md:px-8 transition-all duration-300 bg-white/60 backdrop-blur-sm">
         
-        <div className="absolute left-2 md:left-1/2 transform md:-translate-x-1/2 flex justify-start md:justify-center w-auto md:w-full pointer-events-none">
+        {/* 左側: ロゴエリア (PCでも左寄せ固定) */}
+        <div className="absolute left-2 md:left-8 flex items-center justify-start pointer-events-none">
           {isSticky && (
             <img 
               src={logoheaderImage} 
@@ -210,25 +212,35 @@ const FirstView = () => {
           )}
         </div>
 
-        {/* ■ 修正箇所: ナビゲーションメニュー
-           - text-[11px] (SP) / md:text-[22px] (PC: 2倍に拡大)
-           - gap-6 (SP) / md:gap-10 (PC: 間隔を少し広げる)
-        */}
-        <div className="ml-auto flex items-center gap-6 md:gap-10 text-[11px] md:text-[22px] font-bold text-gray-800 z-10 cursor-pointer">
-          <button onClick={() => scrollToSection('mybrandish')} className="hover:text-amber-500 transition-colors">
+        {/* 中央: テキストリンク (PCのみ絶対配置で画面中央へ) */}
+        <div className="hidden md:flex absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 gap-10 text-[22px] font-bold text-gray-800 z-10">
+          {/* 修正: リンク先を #statement に変更 */}
+          <button onClick={() => scrollToSection('statement')} className="hover:text-amber-500 transition-colors">
             MyBrandishとは？
           </button>
           <button onClick={() => scrollToSection('service')} className="hover:text-amber-500 transition-colors">
             サービス内容について
           </button>
+        </div>
+
+        {/* 右側: お問い合わせボタン (+ SP用のテキストリンク) */}
+        <div className="ml-auto flex items-center gap-6 z-10">
           
-          {/* ■ 修正箇所: お問合せボタンの装飾
-             - 黄色背景(#FFD014), 丸角, パディング追加
-             - テキストは黒
-          */}
+          {/* SPのみ表示するテキストリンク (右寄せ配置) */}
+          <div className="flex md:hidden gap-6 text-[11px] font-bold text-gray-800">
+            {/* 修正: リンク先を #statement に変更 */}
+            <button onClick={() => scrollToSection('statement')} className="hover:text-amber-500 transition-colors">
+              MyBrandishとは？
+            </button>
+            <button onClick={() => scrollToSection('service')} className="hover:text-amber-500 transition-colors">
+              サービス内容について
+            </button>
+          </div>
+
+          {/* 修正: ボタンテキストを「お問い合わせ」に変更 */}
           <button onClick={() => scrollToSection('contact')}>
-            <span className="inline-block bg-[#FFD014] text-black rounded-full py-2 px-6 transition hover:bg-[#e6bb12]">
-              お問合せ
+            <span className="inline-block bg-[#FFD014] text-black rounded-full py-2 px-6 transition hover:bg-[#e6bb12] text-[11px] md:text-[22px] font-bold">
+              お問い合わせ
             </span>
           </button>
         </div>
