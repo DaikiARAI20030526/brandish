@@ -102,7 +102,6 @@ const ProblemsAndSolutions = () => {
     <section 
       ref={sectionRef} 
       className="relative" 
-      // ■ 修正点1: PC版の高さを240vhに変更
       style={{ height: isMobile ? 'auto' : '240vh' }}
     >
       
@@ -121,13 +120,13 @@ const ProblemsAndSolutions = () => {
         `}>
           <h2 className={`font-semibold transition-all duration-700 ${isMobile ? 'text-[18px]' : 'text-[24px] h-[40px]'}`}>
             {isSolutionPhase ? (
-               // ■ 修正点2: 背景色(#FFD014)、文字色(#FFF)、余白、角丸を追加
-               <span className="inline-block bg-[#FFD014] rounded-full py-[5px] px-[8px] animate-fade-in">
+               // ■ 修正: text-black, py-[9px], px-[25px]
+               <span className="inline-block bg-[#FFD014] text-black rounded-full py-[9px] px-[25px] animate-fade-in">
                  YOKOYAMAにお任せください
                </span>
             ) : (
-               // ■ 修正点2: 同上
-               <span className="inline-block bg-[#FFD014] text-white rounded-full py-[5px] px-[8px]">
+               // ■ 修正: 同上
+               <span className="inline-block bg-[#FFD014] text-black rounded-full py-[9px] px-[25px]">
                  こんなお悩みありませんか？
                </span>
             )}
@@ -153,8 +152,9 @@ const ProblemsAndSolutions = () => {
                 `}
                 style={{
                   ...(isMobile ? { minHeight: '120px' } : {}),
-                  borderTop: '0.3px solid #D9D9D9',
-                  borderBottom: '0.3px solid #D9D9D9'
+                  // ■ 修正: ボーダー色を #FFD014 に変更
+                  borderTop: '0.3px solid #FFD014',
+                  borderBottom: '0.3px solid #FFD014'
                 }}
               >
 
