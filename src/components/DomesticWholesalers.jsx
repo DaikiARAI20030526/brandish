@@ -125,10 +125,10 @@ const DomesticWholesalers = () => {
             ? "lg:max-h-[112%] lg:max-w-[112%]" 
             : "lg:max-h-[80%] lg:max-w-[80%]";
 
-          // SP版は指定通り縮小 (通常: ~1.3倍小, ボトル: ~1.5倍小)
+          // SP版: 前回のサイズから1.2倍大きく設定
           const spImageSizeClass = index === 1
-            ? "max-h-[75%] max-w-[75%]" // ボトル (112% / 1.5 ≈ 75%)
-            : "max-h-[62%] max-w-[62%]"; // 通常 (80% / 1.3 ≈ 62%)
+            ? "max-h-[90%] max-w-[90%]" // ボトル (75% * 1.2 = 90%)
+            : "max-h-[75%] max-w-[75%]"; // 通常 (62% * 1.2 ≈ 74.4% -> 75%)
 
           // クラスを結合
           const finalImageSizeClass = `${spImageSizeClass} ${pcImageSizeClass}`;
@@ -149,17 +149,16 @@ const DomesticWholesalers = () => {
               {/* ■ 1. 裏面（詳細レイヤー） */}
               <div className="absolute inset-0 text-gray-900 z-10 p-6 max-[530px]:p-4">
                 
-                {/* 画像表示 (SP/PC共通化) */}
+                {/* 画像表示 */}
                 <div className="absolute flex inset-0 items-center justify-center pl-[30%] pointer-events-none z-0">
                   <img 
                     src={cardBgImages[index]} 
                     alt="" 
-                    // ■ 修正: レスポンシブ対応したサイズクラスを適用
                     className={`${finalImageSizeClass} object-contain transform transition-transform duration-500 ${imageStyleClass}`} 
                   />
                 </div>
 
-                {/* --- テキスト要素 (SP版テキストサイズ修正) --- */}
+                {/* --- テキスト要素 --- */}
                 
                 {/* 1. Detail Title */}
                 <p className="absolute font-bold opacity-90 z-10
@@ -170,7 +169,6 @@ const DomesticWholesalers = () => {
                 </p>
                 
                 {/* 2. Title */}
-                {/* ■ 修正: SP版テキストサイズを3px拡大 (18px -> 21px) */}
                 <h4 className="absolute font-bold leading-tight z-10
                   left-32 top-20 text-left text-[26px]
                   max-[530px]:left-4 max-[530px]:top-10 max-[530px]:transform-none 
@@ -180,7 +178,6 @@ const DomesticWholesalers = () => {
                 </h4>
 
                 {/* 3. Total */}
-                {/* ■ 修正: SP版の店舗名サイズを2px縮小 (18px -> 16px) */}
                 <div className="absolute z-10
                   left-32 top-32 text-left
                   max-[530px]:left-4 max-[530px]:top-20 max-[530px]:bottom-auto max-[530px]:right-auto max-[530px]:text-left"
@@ -196,13 +193,10 @@ const DomesticWholesalers = () => {
                 </div>
 
                 {/* 4. Group A & B */}
-                {/* ■ 修正: SP版のテキストサイズを約1.2倍縮小
-                    店名: 15px -> 13px
-                    店舗数: 12px -> 10px
-                */}
+                {/* ■ 修正: gapを 0.5rem (gap-2) に変更 */}
                 <div className="absolute text-left flex flex-col gap-4 z-10
                   left-32 bottom-12
-                  max-[530px]:bottom-4 max-[530px]:left-4 max-[530px]:gap-3"
+                  max-[530px]:bottom-4 max-[530px]:left-4 max-[530px]:gap-2"
                 >
                   <div className="max-[530px]:block">
                     <p className="font-bold mb-2 text-[20px] 
