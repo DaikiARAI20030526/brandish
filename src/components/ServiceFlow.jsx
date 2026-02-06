@@ -91,11 +91,11 @@ const ServiceFlow = () => {
                   {/* 左側に矢印とSTEPをグループ化して配置 */}
                   <div className="flex items-center gap-[10px] md:pl-[7rem]">
                     
-                    {/* ■ 修正: 矢印アイコンを黄色い円で囲む */}
+                    {/* ■ 修正: 円とアイコンのサイズを約半分に縮小 */}
                     <div 
                       className={`
                         flex items-center justify-center
-                        w-8 h-8 md:w-10 md:h-10
+                        w-5 h-5 md:w-6 md:h-6       /* 修正: w-8/10 -> w-5/6 */
                         bg-[#FFD014] rounded-full
                         transition-transform duration-300
                         ${isOpen ? 'rotate-180' : 'rotate-0'}
@@ -103,12 +103,12 @@ const ServiceFlow = () => {
                     >
                       <svg 
                         xmlns="http://www.w3.org/2000/svg" 
-                        // アイコンサイズ調整
-                        className="w-5 h-5 md:w-6 md:h-6 text-black"
+                        // 修正: w-5/6 -> w-3/4 (小さく)
+                        className="w-3 h-3 md:w-4 md:h-4 text-black"
                         viewBox="0 0 24 24" 
                         fill="none" 
                         stroke="currentColor" 
-                        strokeWidth="2" 
+                        strokeWidth="3" /* 修正: 小さくなった分、視認性のため少し太く(2->3) */
                         strokeLinecap="round" 
                         strokeLinejoin="round"
                       >
