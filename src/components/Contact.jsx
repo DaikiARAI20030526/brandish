@@ -4,7 +4,7 @@ import logo from '../assets/YK_ロゴ仮.png';
 
 const Contact = () => {
   // ■ 1. クライアントのメールアドレス
-  const CLIENT_EMAIL = "ayataka184519@gmail.com"; 
+  const CLIENT_EMAIL = "info@yokoyama-foods.com"; 
   const ENDPOINT = `https://formsubmit.co/ajax/${CLIENT_EMAIL}`;
 
   // 状態管理
