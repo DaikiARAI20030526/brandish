@@ -11,7 +11,6 @@ import ProblemsAndSolutions from './components/ProblemsAndSolutions';
 import ServiceFlow from './components/ServiceFlow';
 import FAQ from './components/FAQ';
 import CompanyInfo from './components/CompanyInfo';
-import Price from './components/Price';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 
